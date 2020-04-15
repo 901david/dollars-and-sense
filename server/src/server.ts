@@ -2,7 +2,9 @@ import express, { NextFunction } from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
 import { mainRouter } from './routes';
-import morgan from 'morgan';
+import { wrappedLogger } from './common/console-logger-wrapper';
+import { logRequests } from './common/custom-logger-middleware';
+import { request } from 'http';
 
 const app = express();
 
@@ -14,7 +16,7 @@ app.use(bodyParser({ extended: true }));
 
 app.use(mainRouter);
 
-morgan('combined');
+request.on('finish', logRequests);
 
 app.use(
   (
@@ -29,7 +31,8 @@ app.use(
 
 app.listen(PORT, (...err: any[]) => {
   if (err.length > 0) throw err;
-  console.log(
-    `Success! Started on Port: ${PORT}\n*****************************************************`
+  wrappedLogger(
+    'info',
+    `Success! Started on Port: ${PORT}\n******************************************************`
   );
 });

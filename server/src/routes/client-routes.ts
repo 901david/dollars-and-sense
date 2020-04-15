@@ -6,4 +6,5 @@ import {
 
 export const clientRouter = Router();
 
-clientRouter.get('/', indexFileHandler).get('*', redirectHandler);
+clientRouter.get('/', indexFileHandler);
+// .get('*', redirectHandler);
