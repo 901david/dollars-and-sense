@@ -1,21 +1,15 @@
 import passport from 'passport';
 import passportJWT from 'passport-jwt';
 import { JWTOptions } from '../models/jwt-options.type';
-import DB_CONNECTION from './connection';
-import { QueryError, RowDataPacket } from 'mysql2';
-import { makeQuery } from '../common/promisified-db-query';
 import { Express } from 'express';
+import { getUser } from '../controllers/user-auth-controller';
 
 const ExtractJwt = passportJWT.ExtractJwt;
 const JwtStrategy = passportJWT.Strategy;
 
-const jwtOptions: JWTOptions = {
+export const jwtOptions: JWTOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: 'Hello world',
-};
-
-const getUser = (id: number) => {
-  return makeQuery(`SELECT * FROM Users WHERE id=${id}`);
 };
 
 export const setUpAuthentication = (app: Express) => {

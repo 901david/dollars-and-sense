@@ -1,6 +1,10 @@
 import { Router } from 'express';
-import { handleUserRegister } from '../controllers/user-auth-controller';
+import {
+  handleUserRegister,
+  handleUserLogin,
+} from '../controllers/user-auth-controller';
 
 export const userAuthRouter = Router();
 
 userAuthRouter.post('/register', handleUserRegister);
+userAuthRouter.post('/login', handleUserLogin);
