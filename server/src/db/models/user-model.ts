@@ -1,6 +1,6 @@
 import { orm } from '../../config/orm';
 import { ExpressHandlerCB } from '../../models/express-handler-cb';
-import { UserCreationTransferObject } from './../models/user-creation-type';
+import { UserCreationTransferObject } from '../../models/user-creation-type';
 import { User } from '../../models/user.type';
 
 export class UserDbModel {

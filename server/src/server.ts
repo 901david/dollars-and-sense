@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import { mainRouter } from './routes';
 import { ServerLogger } from './common/file-logger';
 import { NodeEnv } from './models/node-env.type';
+import { setUpAuthentication } from './config/authentication-setup';
 
 const NODE_ENV = (process.env.NODE_ENV as NodeEnv) || 'development';
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.static(path.join(__dirname, 'dist/static')));
 app.use(express.json());
 app.use(bodyParser({ extended: true }));
 
+setUpAuthentication(app);
 serverLogger.setupLoggingByEnv();
 
 app.use(mainRouter);
