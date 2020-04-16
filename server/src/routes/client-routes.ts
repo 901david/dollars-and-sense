@@ -1,6 +1,9 @@
 import { Router } from 'express';
-import { indexFileHandler } from '../controllers/client-controller';
+import {
+  indexFileHandler,
+  redirectHandler,
+} from '../controllers/client-controller';
 
 export const clientRouter = Router();
 
-clientRouter.get('/', indexFileHandler);
+clientRouter.get('/', indexFileHandler).get('*', redirectHandler);
