@@ -6,7 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const connection_1 = __importDefault(require("./connection"));
 const mapKeys = (data) => {
     return Object.keys(data).map(key => {
-        return `${key}="${data[key]}"`;
+        const isNum = isNaN(+data[key]) === false;
+        const value = isNum
+            ? +data[key]
+            : data[key];
+        return `${key}=${isNum ? value : `"${value}"`}`;
     });
 };
 class orm {
@@ -18,9 +22,11 @@ class orm {
         });
     }
     static update(tableName, conditions, valuesToUpdate, cb) {
+        console.log(tableName, conditions, valuesToUpdate);
         const mappedConditions = mapKeys(conditions);
         const mappedValues = mapKeys(valuesToUpdate);
-        connection_1.default.query(`UPDATE ${tableName} WHERE ${mappedConditions.join(' AND ')} SET ${mappedValues.join(' AND ')})}`, (err, results) => {
+        console.log(`UPDATE ${tableName} WHERE ${mappedConditions.join(' AND ')} SET ${mappedValues.join(', ')}`);
+        connection_1.default.query(`UPDATE ${tableName} SET ${mappedValues.join(', ')} WHERE ${mappedConditions.join(' AND ')}`, (err, results) => {
             if (err)
                 throw err;
             cb(results);

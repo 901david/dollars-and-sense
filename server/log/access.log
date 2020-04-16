@@ -19,3 +19,7 @@
 ::1 - - [16/Apr/2020:17:21:07 +0000] "POST /api/users/ HTTP/1.1" 200 91 "-" "PostmanRuntime/7.24.0"
 ::1 - - [16/Apr/2020:17:21:26 +0000] "POST /api/users/ HTTP/1.1" 200 91 "-" "PostmanRuntime/7.24.0"
 ::1 - - [16/Apr/2020:17:21:40 +0000] "GET /api/users/ HTTP/1.1" 200 350 "-" "PostmanRuntime/7.24.0"
+::1 - - [16/Apr/2020:17:37:26 +0000] "PUT /api/users/4 HTTP/1.1" 500 1513 "-" "PostmanRuntime/7.24.0"
+::1 - - [16/Apr/2020:17:38:27 +0000] "PUT /api/users/4 HTTP/1.1" 500 1513 "-" "PostmanRuntime/7.24.0"
+::1 - - [16/Apr/2020:17:50:22 +0000] "PUT /api/users/4 HTTP/1.1" 200 147 "-" "PostmanRuntime/7.24.0"
+::1 - - [16/Apr/2020:17:50:33 +0000] "GET /api/users/ HTTP/1.1" 200 368 "-" "PostmanRuntime/7.24.0"

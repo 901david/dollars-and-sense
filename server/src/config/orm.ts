@@ -4,7 +4,12 @@ import { ExpressHandlerCB } from '../models/express-handler-cb';
 
 const mapKeys = (data: Object) => {
   return Object.keys(data).map(key => {
-    return `${key}="${data[key as keyof Object]}"`;
+    const isNum = isNaN(+data[key as keyof Object]) === false;
+    const value = isNum
+      ? +data[key as keyof Object]
+      : data[key as keyof Object];
+
+    return `${key}=${isNum ? value : `"${value}"`}`;
   });
 };
 
@@ -19,17 +24,24 @@ export class orm {
     );
   }
 
-  static update<
-    T extends { [key: string]: string | number },
-    U extends Array<Object>
-  >(tableName: string, conditions: T, valuesToUpdate: U, cb: ExpressHandlerCB) {
+  static update<T extends Object, U extends Array<Object>>(
+    tableName: string,
+    conditions: T,
+    valuesToUpdate: U,
+    cb: ExpressHandlerCB
+  ) {
+    console.log(tableName, conditions, valuesToUpdate);
     const mappedConditions = mapKeys(conditions);
     const mappedValues = mapKeys(valuesToUpdate);
-
-    DB_CONNECTION.query(
+    console.log(
       `UPDATE ${tableName} WHERE ${mappedConditions.join(
         ' AND '
-      )} SET ${mappedValues.join(' AND ')})}`,
+      )} SET ${mappedValues.join(', ')}`
+    );
+    DB_CONNECTION.query(
+      `UPDATE ${tableName} SET ${mappedValues.join(
+        ', '
+      )} WHERE ${mappedConditions.join(' AND ')}`,
       (err: QueryError | null, results: RowDataPacket[]) => {
         if (err) throw err;
         cb(results);

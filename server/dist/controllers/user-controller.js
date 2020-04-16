@@ -7,7 +7,8 @@ exports.getUsers = (req, res) => {
     });
 };
 exports.updateUsers = (req, res) => {
-    user_model_1.UserDbModel.get((results) => {
+    const { body: data, params: { id }, } = req;
+    user_model_1.UserDbModel.update({ id }, data, (results) => {
         res.json(results);
     });
 };

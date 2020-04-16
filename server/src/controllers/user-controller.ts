@@ -10,7 +10,12 @@ export const getUsers: RequestHandler = (req, res) => {
 };
 
 export const updateUsers: RequestHandler = (req, res) => {
-  UserDbModel.get((results: RowDataPacket[]) => {
+  const {
+    body: data,
+    params: { id },
+  } = req;
+
+  UserDbModel.update({ id }, data, (results: RowDataPacket[]) => {
     res.json(results);
   });
 };
