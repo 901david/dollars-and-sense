@@ -1,4 +1,4 @@
-import express, { NextFunction } from 'express';
+import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
 import { mainRouter } from './routes';

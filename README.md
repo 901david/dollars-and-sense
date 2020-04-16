@@ -2,10 +2,9 @@
 
 An application to help manage bills, debt, and savings
 
-## Tech Stack
+## Backend
 
 - Node
 - Typescript
 - Express
 - Morgan
-- Winston
