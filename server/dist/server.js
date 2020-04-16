@@ -7,21 +7,22 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const routes_1 = require("./routes");
-const console_logger_wrapper_1 = require("./common/console-logger-wrapper");
-const custom_logger_middleware_1 = require("./common/custom-logger-middleware");
-const http_1 = require("http");
+const file_logger_1 = require("./common/file-logger");
+const { NODE_ENV } = process.env;
 const app = express_1.default();
+const serverLogger = new file_logger_1.ServerLogger(app, NODE_ENV);
 const PORT = process.env.PORT || 5005;
 app.use(express_1.default.static(path_1.default.join(__dirname, 'dist/static')));
 app.use(express_1.default.json());
 app.use(body_parser_1.default({ extended: true }));
+serverLogger.setupLoggingByEnv();
 app.use(routes_1.mainRouter);
-http_1.request.on('finish', custom_logger_middleware_1.logRequests);
+//TODO: Should redirect bad html reqs but error on api reqs
 app.use((err, req, res, next) => {
     res.status(500).json({ message: err.message });
 });
 app.listen(PORT, (...err) => {
     if (err.length > 0)
         throw err;
-    console_logger_wrapper_1.wrappedLogger('info', `Success! Started on Port: ${PORT}\n******************************************************`);
+    console.info(`Success! Started on Port: ${PORT}\n******************************************************`);
 });
