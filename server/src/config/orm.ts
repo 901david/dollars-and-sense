@@ -71,15 +71,9 @@ export class orm {
     );
   }
 
-  static delete<U extends Array<Object>>(
-    tableName: string,
-    conditions: U,
-    cb: ExpressHandlerCB
-  ) {
-    const mappedConditions = mapKeys(conditions);
-
+  static delete(tableName: string, id: string, cb: ExpressHandlerCB) {
     DB_CONNECTION.query(
-      `DELETE FROM ${tableName} WHERE ${mappedConditions.join(' AND ')}`,
+      `DELETE FROM ${tableName} WHERE id=${id}`,
       (err: QueryError | null, results: RowDataPacket[]) => {
         if (err) throw err;
         cb(results);

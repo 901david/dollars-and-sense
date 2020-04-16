@@ -2,10 +2,11 @@ import { Router } from 'express';
 import {
   getUsers,
   createUser,
-  updateUsers,
+  updateUser,
+  deleteUser,
 } from '../controllers/user-controller';
 
 export const userRouter = Router();
 
 userRouter.route('/').get(getUsers).post(createUser);
-userRouter.route('/:id').put(updateUsers);
+userRouter.route('/:id').put(updateUser).delete(deleteUser);

@@ -6,14 +6,15 @@ exports.getUsers = (req, res) => {
         res.json(results);
     });
 };
-exports.updateUsers = (req, res) => {
+exports.updateUser = (req, res) => {
     const { body: data, params: { id }, } = req;
     user_model_1.UserDbModel.update({ id }, data, (results) => {
         res.json(results);
     });
 };
-exports.deleteUsers = (req, res) => {
-    user_model_1.UserDbModel.get((results) => {
+exports.deleteUser = (req, res) => {
+    const { params: { id }, } = req;
+    user_model_1.UserDbModel.delete(id, (results) => {
         res.json(results);
     });
 };

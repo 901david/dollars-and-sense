@@ -40,9 +40,8 @@ class orm {
             cb(results);
         });
     }
-    static delete(tableName, conditions, cb) {
-        const mappedConditions = mapKeys(conditions);
-        connection_1.default.query(`DELETE FROM ${tableName} WHERE ${mappedConditions.join(' AND ')}`, (err, results) => {
+    static delete(tableName, id, cb) {
+        connection_1.default.query(`DELETE FROM ${tableName} WHERE id=${id}`, (err, results) => {
             if (err)
                 throw err;
             cb(results);

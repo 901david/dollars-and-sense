@@ -27,4 +27,8 @@ export class UserDbModel {
   ) {
     orm.update('Users', conditions, valuesToUpdate, cb);
   }
+
+  static delete(id: string, cb: ExpressHandlerCB) {
+    orm.delete('Users', id, cb);
+  }
 }

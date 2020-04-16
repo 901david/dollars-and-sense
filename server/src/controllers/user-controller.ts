@@ -9,7 +9,7 @@ export const getUsers: RequestHandler = (req, res) => {
   });
 };
 
-export const updateUsers: RequestHandler = (req, res) => {
+export const updateUser: RequestHandler = (req, res) => {
   const {
     body: data,
     params: { id },
@@ -20,8 +20,12 @@ export const updateUsers: RequestHandler = (req, res) => {
   });
 };
 
-export const deleteUsers: RequestHandler = (req, res) => {
-  UserDbModel.get((results: RowDataPacket[]) => {
+export const deleteUser: RequestHandler = (req, res) => {
+  const {
+    params: { id },
+  } = req;
+
+  UserDbModel.delete(id, (results: RowDataPacket[]) => {
     res.json(results);
   });
 };

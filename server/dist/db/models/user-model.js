@@ -11,5 +11,8 @@ class UserDbModel {
     static update(conditions, valuesToUpdate, cb) {
         orm_1.orm.update('Users', conditions, valuesToUpdate, cb);
     }
+    static delete(id, cb) {
+        orm_1.orm.delete('Users', id, cb);
+    }
 }
 exports.UserDbModel = UserDbModel;
