@@ -49,7 +49,7 @@ export const userMutations = {
       const body = { ...args };
       delete body.id;
       return axios
-        .put(`http://localhost:5005/api/users/${args.id}`, body)
+        .patch(`http://localhost:5005/api/users/${args.id}`, body)
         .then(({ data }) => data)
         .catch((err: Error) => {
           console.log(err);
