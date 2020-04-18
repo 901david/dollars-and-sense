@@ -22,10 +22,8 @@ class orm {
         });
     }
     static update(tableName, conditions, valuesToUpdate, cb) {
-        console.log(tableName, conditions, valuesToUpdate);
         const mappedConditions = mapKeys(conditions);
         const mappedValues = mapKeys(valuesToUpdate);
-        console.log(`UPDATE ${tableName} WHERE ${mappedConditions.join(' AND ')} SET ${mappedValues.join(', ')}`);
         connection_1.default.query(`UPDATE ${tableName} SET ${mappedValues.join(', ')} WHERE ${mappedConditions.join(' AND ')}`, (err, results) => {
             if (err)
                 throw err;
@@ -34,7 +32,8 @@ class orm {
     }
     static create(tableName, columnsUpdated, valuesToUpdate, cb) {
         const mappedValues = Array.from(columnsUpdated, (column) => `"${valuesToUpdate[column]}"`);
-        connection_1.default.query(`INSERT INTO ${tableName} (${columnsUpdated.join(', ')}) VALUES (${mappedValues.join(', ')})`, (err, results) => {
+        connection_1.default.query(`INSERT INTO ${tableName} (${columnsUpdated.join(', ')}) VALUES (${mappedValues.join(', ')})`, (err, results, fields) => {
+            console.log('LOOK', fields);
             if (err)
                 throw err;
             cb(results);

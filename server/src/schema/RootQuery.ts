@@ -1,9 +1,9 @@
 import { GraphQLObjectType } from 'graphql';
-import { userAPIFields } from './fields/users';
+import { userRootQueries } from './queries/users';
 
 export const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
   fields: {
-    ...userAPIFields,
+    ...userRootQueries,
   },
 });

@@ -30,14 +30,9 @@ export class orm {
     valuesToUpdate: U,
     cb: ExpressHandlerCB
   ) {
-    console.log(tableName, conditions, valuesToUpdate);
     const mappedConditions = mapKeys(conditions);
     const mappedValues = mapKeys(valuesToUpdate);
-    console.log(
-      `UPDATE ${tableName} WHERE ${mappedConditions.join(
-        ' AND '
-      )} SET ${mappedValues.join(', ')}`
-    );
+
     DB_CONNECTION.query(
       `UPDATE ${tableName} SET ${mappedValues.join(
         ', '
@@ -64,7 +59,8 @@ export class orm {
       `INSERT INTO ${tableName} (${columnsUpdated.join(
         ', '
       )}) VALUES (${mappedValues.join(', ')})`,
-      (err: QueryError | null, results: RowDataPacket[]) => {
+      (err: QueryError | null, results: RowDataPacket[], fields: any) => {
+        console.log('LOOK', fields);
         if (err) throw err;
         cb(results);
       }

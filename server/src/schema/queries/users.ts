@@ -1,12 +1,12 @@
 import axios from 'axios';
-import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
+import { GraphQLInt } from 'graphql';
 
 import { UserType } from '../types/user';
 import { User } from '../../models/user.type';
 
 const BASE_URL = 'http://localhost:5005/api';
 
-export const userAPIFields = {
+export const userRootQueries = {
   user: {
     type: UserType,
     args: { id: { type: GraphQLInt } },
