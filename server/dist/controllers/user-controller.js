@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_model_1 = require("../db/models/user-model");
+const user_auth_controller_1 = require("./user-auth-controller");
 exports.getUsers = (req, res) => {
     user_model_1.UserDbModel.get((results) => {
         res.json(results);
@@ -18,9 +19,12 @@ exports.deleteUser = (req, res) => {
         res.json(results);
     });
 };
-exports.createUser = (req, res) => {
+exports.createUser = async (req, res) => {
     const { body: userCreationData } = req;
+    const hashedPass = await user_auth_controller_1.handleUserPassword(userCreationData);
+    userCreationData.user_password = hashedPass;
     user_model_1.UserDbModel.create(userCreationData, (results) => {
+        console.log(req.user);
         res.json(results);
     });
 };

@@ -17,7 +17,10 @@ export const userMutations = {
     ) {
       return axios
         .post('http://localhost:5005/api/users/register', args)
-        .then(({ data }) => data)
+        .then(({ data }) => {
+          console.log(data);
+          return data;
+        })
         .catch((err: Error) => {
           console.log(err);
         });

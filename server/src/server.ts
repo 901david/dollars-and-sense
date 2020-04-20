@@ -6,6 +6,7 @@ import { ServerLogger } from './common/file-logger';
 import { NodeEnv } from './models/node-env.type';
 import { setUpAuthentication } from './config/authentication-setup';
 import { setupGraphQl } from './config/graphql-setup';
+import { protectRoute } from './controllers/user-auth-controller';
 
 const NODE_ENV = (process.env.NODE_ENV as NodeEnv) || 'development';
 const app = express();
@@ -19,7 +20,9 @@ app.use(bodyParser({ extended: true }));
 // setUpAuthentication(app);
 setupGraphQl(app);
 serverLogger.setupLoggingByEnv();
-
+app.get('/protected', protectRoute(), (req, res) => {
+  res.send('You get the secret');
+});
 app.use(mainRouter);
 
 app.listen(PORT, (...err: any[]) => {

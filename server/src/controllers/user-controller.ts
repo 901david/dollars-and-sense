@@ -2,6 +2,7 @@ import { UserDbModel } from '../db/models/user-model';
 import { RowDataPacket } from 'mysql2';
 import { RequestHandler } from 'express';
 import { UserCreationTransferObject } from '../models/user-creation-type';
+import { handleUserPassword } from './user-auth-controller';
 
 export const getUsers: RequestHandler = (req, res) => {
   UserDbModel.get((results: RowDataPacket[]) => {
@@ -30,11 +31,14 @@ export const deleteUser: RequestHandler = (req, res) => {
   });
 };
 
-export const createUser: RequestHandler = (req, res) => {
+export const createUser: RequestHandler = async (req, res) => {
   const { body: userCreationData } = req;
+  const hashedPass = await handleUserPassword(userCreationData);
+  userCreationData.user_password = hashedPass;
   UserDbModel.create(
     userCreationData as UserCreationTransferObject,
     (results: RowDataPacket[]) => {
+      console.log(req.user);
       res.json(results);
     }
   );

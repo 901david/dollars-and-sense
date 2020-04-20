@@ -9,6 +9,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const routes_1 = require("./routes");
 const file_logger_1 = require("./common/file-logger");
 const graphql_setup_1 = require("./config/graphql-setup");
+const user_auth_controller_1 = require("./controllers/user-auth-controller");
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const app = express_1.default();
 const serverLogger = new file_logger_1.ServerLogger(app, NODE_ENV);
@@ -19,6 +20,9 @@ app.use(body_parser_1.default({ extended: true }));
 // setUpAuthentication(app);
 graphql_setup_1.setupGraphQl(app);
 serverLogger.setupLoggingByEnv();
+app.get('/protected', user_auth_controller_1.protectRoute(), (req, res) => {
+    res.send('You get the secret');
+});
 app.use(routes_1.mainRouter);
 app.listen(PORT, (...err) => {
     if (err.length > 0)
