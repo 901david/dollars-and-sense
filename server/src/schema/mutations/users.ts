@@ -1,6 +1,7 @@
 import { GraphQLString, GraphQLInt, GraphQLNonNull } from 'graphql';
-import { UserType } from '../types/user';
 import axios from 'axios';
+
+import { UserType } from '../types/user';
 import { User } from '../../models/user.type';
 
 export const userMutations = {
@@ -11,19 +12,19 @@ export const userMutations = {
       user_password: { type: new GraphQLNonNull(GraphQLString) },
       email: { type: new GraphQLNonNull(GraphQLString) },
     },
-    resolve(
-      parentValue: any,
+    async resolve(
+      parentValue: User,
       args: { user_name: string; user_password: string; user_email: string }
     ) {
-      return axios
-        .post('http://localhost:5005/api/users/register', args)
-        .then(({ data }) => {
-          console.log(data);
-          return data;
-        })
-        .catch((err: Error) => {
-          console.log(err);
-        });
+      try {
+        const results = await axios.post(
+          'http://localhost:5005/api/authau/register',
+          args
+        );
+        return results.data;
+      } catch (err) {
+        throw err;
+      }
     },
   },
   deleteUser: {
@@ -31,13 +32,15 @@ export const userMutations = {
     args: {
       id: { type: new GraphQLNonNull(GraphQLInt) },
     },
-    resolve(parentValue: any, args: { id: number }) {
-      return axios
-        .delete(`http://localhost:5005/api/users/${args.id}`)
-        .then(({ data }) => data)
-        .catch((err: Error) => {
-          console.log(err);
-        });
+    async resolve(parentValue: User, args: { id: number }) {
+      try {
+        const results = await axios.delete(
+          `http://localhost:5005/api/users/${args.id}`
+        );
+        return results.data;
+      } catch (err) {
+        throw err;
+      }
     },
   },
   updateUser: {
@@ -48,15 +51,18 @@ export const userMutations = {
       user_password: { type: GraphQLString },
       email: { type: GraphQLString },
     },
-    resolve(parentValue: any, args: User) {
-      const body = { ...args };
-      delete body.id;
-      return axios
-        .patch(`http://localhost:5005/api/users/${args.id}`, body)
-        .then(({ data }) => data)
-        .catch((err: Error) => {
-          console.log(err);
-        });
+    async resolve(parentValue: User, args: User) {
+      try {
+        const body = { ...args };
+        delete body.id;
+        const results = await axios.patch(
+          `http://localhost:5005/api/users/${args.id}`,
+          body
+        );
+        return results.data;
+      } catch (err) {
+        throw err;
+      }
     },
   },
 };

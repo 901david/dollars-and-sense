@@ -1,4 +1,4 @@
 /server/node_modules
 /server/log
 /server/dist
-/server/env
+/server/.env
