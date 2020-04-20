@@ -1,11 +1,12 @@
-import DB_CONNECTION from '../../config/connection';
-import { QueryError, RowDataPacket } from 'mysql2';
+import { makeQuery } from '../../common/promisified-db-query';
 
-export const seedUsers = () =>
-  DB_CONNECTION.query(
-    'INSERT INTO Users (user_name, email, user_password) VALUES ("Bob", "Bob@gmail.com", "dasdas6d7asd67as6d")',
-    (err: QueryError, results: RowDataPacket[]) => {
-      if (err) throw err;
-      console.log(results);
-    }
-  );
+export const seedUsers = async () => {
+  try {
+    const results = await makeQuery(
+      'INSERT INTO Users (user_name, email, user_password) VALUES ("Bob", "Bob@gmail.com", "dasdas6d7asd67as6d")'
+    );
+    console.log('Success! ', results);
+  } catch (err) {
+    throw err;
+  }
+};

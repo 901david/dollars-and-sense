@@ -1,11 +1,13 @@
 import { RequestHandler } from 'express';
-import { createUser } from './user-controller';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { RowDataPacket } from 'mysql2';
+
 import { makeQuery } from '../common/promisified-db-query';
 import { User } from '../models/user.type';
 import { jwtOptions } from '../config/authentication-setup';
-import bcrypt from 'bcrypt';
-import passport from 'passport';
+import { UserDbModel } from '../db/models/user-model';
+import { UserCreationTransferObject } from '../models/user-creation-type';
 
 export const handleUserPassword = (userData: User) => {
   return new Promise((resolve, reject) => {
@@ -21,11 +23,21 @@ export const getUser = (id: number) => {
 };
 
 export const getUserByUserName = (username: string) => {
-  console.log(`SELECT * FROM Users WHERE user_name=${username}`);
   return makeQuery(`SELECT * FROM Users WHERE user_name="${username}"`);
 };
 
-export const handleUserRegister: RequestHandler = createUser;
+export const handleUserRegister: RequestHandler = async (req, res) => {
+  const { body: userCreationData } = req;
+  const hashedPass = await handleUserPassword(userCreationData);
+  userCreationData.user_password = hashedPass;
+  UserDbModel.create(
+    userCreationData as UserCreationTransferObject,
+    (results: RowDataPacket[]) => {
+      console.log(req.user);
+      res.json(results);
+    }
+  );
+};
 
 export const handleUserLogin: RequestHandler = async (req, res, next) => {
   try {
@@ -33,7 +45,6 @@ export const handleUserLogin: RequestHandler = async (req, res, next) => {
     if (user_name && user_password) {
       const userData = await getUserByUserName(user_name);
       const user = userData[0] as User;
-      console.log(user);
       if (!user) {
         res.status(401).json({ msg: 'No such user found', user });
       }
@@ -42,6 +53,7 @@ export const handleUserLogin: RequestHandler = async (req, res, next) => {
         user_password,
         user.user_password
       );
+
       if (isValidPass) {
         const payload = { id: user.id };
         const token = jwt.sign(payload, jwtOptions.secretOrKey);
@@ -55,7 +67,7 @@ export const handleUserLogin: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const handleUserLogout: RequestHandler = async (req, res, next) => {
+export const handleUserLogout: RequestHandler = async (req, res) => {
   req.logout();
   res.redirect('/');
 };

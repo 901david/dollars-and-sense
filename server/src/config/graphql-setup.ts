@@ -1,6 +1,7 @@
 import expressGraphQL from 'express-graphql';
-import { graphQlSchema } from '../schema/schema';
 import { Express } from 'express';
+
+import { graphQlSchema } from '../schema/schema';
 
 export const setupGraphQl = (app: Express) => {
   app.use(

@@ -1,4 +1,5 @@
 import { GraphQLObjectType } from 'graphql';
+
 import { userMutations } from './mutations/users';
 
 export const Mutations = new GraphQLObjectType({

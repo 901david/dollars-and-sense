@@ -1,6 +1,8 @@
-import DB_CONNECTION from './connection';
 import { RowDataPacket, QueryError } from 'mysql2';
+
+import DB_CONNECTION from './connection';
 import { ExpressHandlerCB } from '../models/express-handler-cb';
+import { makeQuery } from '../common/promisified-db-query';
 
 const mapKeys = (data: Object) => {
   return Object.keys(data).map(key => {
@@ -14,17 +16,16 @@ const mapKeys = (data: Object) => {
 };
 
 export class orm {
-  static get(tableName: string, cb: ExpressHandlerCB) {
-    DB_CONNECTION.query(
-      `SELECT * FROM ${tableName}`,
-      (err: QueryError | null, results: RowDataPacket[]) => {
-        if (err) throw err;
-        cb(results);
-      }
-    );
+  static async get(tableName: string, cb: ExpressHandlerCB) {
+    try {
+      const results = await makeQuery(`SELECT * FROM ${tableName}`);
+      cb(results);
+    } catch (err) {
+      throw err;
+    }
   }
 
-  static update<T extends Object, U extends Array<Object>>(
+  static async update<T extends Object, U extends Array<Object>>(
     tableName: string,
     conditions: T,
     valuesToUpdate: U,
@@ -32,19 +33,19 @@ export class orm {
   ) {
     const mappedConditions = mapKeys(conditions);
     const mappedValues = mapKeys(valuesToUpdate);
-
-    DB_CONNECTION.query(
-      `UPDATE ${tableName} SET ${mappedValues.join(
-        ', '
-      )} WHERE ${mappedConditions.join(' AND ')}`,
-      (err: QueryError | null, results: RowDataPacket[]) => {
-        if (err) throw err;
-        cb(results);
-      }
-    );
+    try {
+      const results = await makeQuery(
+        `UPDATE ${tableName} SET ${mappedValues.join(
+          ', '
+        )} WHERE ${mappedConditions.join(' AND ')}`
+      );
+      cb(results);
+    } catch (err) {
+      throw err;
+    }
   }
 
-  static create<T extends Array<keyof U>, U extends Object>(
+  static async create<T extends Array<keyof U>, U extends Object>(
     tableName: string,
     columnsUpdated: T,
     valuesToUpdate: U,
@@ -55,25 +56,26 @@ export class orm {
       (column: keyof U) => `"${valuesToUpdate[column]}"`
     );
 
-    DB_CONNECTION.query(
-      `INSERT INTO ${tableName} (${columnsUpdated.join(
-        ', '
-      )}) VALUES (${mappedValues.join(', ')})`,
-      (err: QueryError | null, results: RowDataPacket[], fields: any) => {
-        console.log('LOOK', fields);
-        if (err) throw err;
-        cb(results);
-      }
-    );
+    try {
+      const results = await makeQuery(
+        `INSERT INTO ${tableName} (${columnsUpdated.join(
+          ', '
+        )}) VALUES (${mappedValues.join(', ')})`
+      );
+      cb(results);
+    } catch (err) {
+      throw err;
+    }
   }
 
-  static delete(tableName: string, id: string, cb: ExpressHandlerCB) {
-    DB_CONNECTION.query(
-      `DELETE FROM ${tableName} WHERE id=${id}`,
-      (err: QueryError | null, results: RowDataPacket[]) => {
-        if (err) throw err;
-        cb(results);
-      }
-    );
+  static async delete(tableName: string, id: string, cb: ExpressHandlerCB) {
+    try {
+      const results = await makeQuery(
+        `DELETE FROM ${tableName} WHERE id=${id}`
+      );
+      cb(results);
+    } catch (err) {
+      throw err;
+    }
   }
 }
