@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
-import { mainRouter } from './routes';
+import mainRouter from './routes';
 import { ServerLogger } from './common/file-logger';
 import { NodeEnv } from './models/node-env.type';
 import { setUpAuthentication } from './config/authentication-setup';
@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, 'dist/static')));
 app.use(express.json());
 app.use(bodyParser({ extended: true }));
 
-// setUpAuthentication(app);
+setUpAuthentication(app);
 setupGraphQl(app);
 serverLogger.setupLoggingByEnv();
 app.get('/protected', protectRoute(), (req, res) => {

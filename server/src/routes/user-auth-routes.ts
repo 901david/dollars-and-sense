@@ -5,8 +5,10 @@ import {
   handleUserLogout,
 } from '../controllers/user-auth-controller';
 
-export const userAuthRouter = Router();
+const userAuthRouter = Router();
 
 userAuthRouter.post('/register', handleUserRegister);
 userAuthRouter.post('/login', handleUserLogin);
 userAuthRouter.post('/logout', handleUserLogout);
+
+export default userAuthRouter;
