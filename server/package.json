@@ -20,16 +20,32 @@
   },
   "homepage": "https://github.com/901david/dollars-and-sense#readme",
   "dependencies": {
+    "axios": "^0.19.2",
+    "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "graphql": "^15.0.0",
+    "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
+    "mysql2": "^2.1.0",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
     "rotating-file-stream": "^2.0.2",
     "typescript": "^3.8.3"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/bcrypt": "^3.0.0",
     "@types/express": "^4.17.6",
+    "@types/express-graphql": "^0.9.0",
+    "@types/graphql": "^14.5.0",
+    "@types/jsonwebtoken": "^8.3.9",
     "@types/morgan": "^1.9.0",
     "@types/node": "^13.11.1",
+    "@types/passport": "^1.0.3",
+    "@types/passport-jwt": "^3.0.3",
+    "dotenv": "^8.2.0",
     "nodemon": "^2.0.3"
   }
 }
