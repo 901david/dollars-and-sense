@@ -10,15 +10,13 @@ export const userRootQueries = {
   user: {
     type: UserType,
     args: { id: { type: GraphQLInt } },
-    resolve(parentValue: any, args: { id: number }) {
-      axios
-        .get(`${BASE_URL}/users`)
-        .then(({ data: results }) => {
-          return results.find((user: User) => user.id === args.id);
-        })
-        .catch(err => {
-          return console.log(err);
-        });
+    async resolve(parentValue: User, args: { id: number }) {
+      try {
+        const results = await axios.get(`${BASE_URL}/users`);
+        return results.data.find((user: User) => user.id === args.id);
+      } catch (err) {
+        throw err;
+      }
     },
   },
 };
