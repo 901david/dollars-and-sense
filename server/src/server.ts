@@ -6,6 +6,7 @@ if (NODE_ENV === 'development') {
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
+
 import mainRouter from './routes';
 import { ServerLogger } from './common/file-logger';
 import { NodeEnv } from './models/node-env.type';
