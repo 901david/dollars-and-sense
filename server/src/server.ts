@@ -6,6 +6,7 @@ if (NODE_ENV === 'development') {
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 import mainRouter from './routes';
 import { ServerLogger } from './common/file-logger';
@@ -17,6 +18,10 @@ import { protectRoute } from './controllers/user-auth-controller';
 const app = express();
 const serverLogger = new ServerLogger(app, NODE_ENV);
 const PORT = process.env.PORT || 5005;
+
+if (NODE_ENV === 'development') {
+  app.use(cors());
+}
 
 app.use(express.static(path.join(__dirname, 'dist/static')));
 app.use(express.json());
