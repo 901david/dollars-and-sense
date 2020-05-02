@@ -7,7 +7,7 @@ import { MainDash } from './components/MainDash';
 import { PrivateRoute } from './components/Common/PrivateRoute';
 import { Login } from './components/Login';
 
-const GET_USER = gql`
+export const GET_USER = gql`
   query User($id: Int!) {
     user(id: $id) {
       user_name
