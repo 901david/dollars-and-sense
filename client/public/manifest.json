@@ -1,0 +1,8 @@
+{
+  "short_name": "D&S",
+  "name": "Dollars and  Sense",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

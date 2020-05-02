@@ -67,9 +67,13 @@ export const handleUserLogin: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const handleUserLogout: RequestHandler = async (req, res) => {
+export const handleUserLogout: RequestHandler = (req, res) => {
   req.logout();
   res.redirect('/');
+};
+
+export const handleIsUserAuthenticated: RequestHandler = (req, res) => {
+  res.json({ isAuthenticated: req.isAuthenticated() });
 };
 
 const passwordIsCorrect = (userEnteredPass: string, dbPass: string) => {
