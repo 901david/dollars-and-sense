@@ -25,8 +25,8 @@ const App = () => {
   console.log(data);
   return (
     <div>
-      <p>{data.user.user_name}</p>
-      <h1>App</h1>
+      {/* <p>{data.user.user_name}</p>
+      <h1>App</h1> */}
       <Router>
         <PrivateRoute
           route={() => <Route exact path='/' component={MainDash} />}

@@ -6,7 +6,7 @@ interface IInputWrapper {
 
 export const InputWrapper = styled.div<IInputWrapper>`
   position: relative;
-  margin: 3rem;
+  margin: 3rem 0;
   color: white;
   label {
     position: absolute;
@@ -31,5 +31,9 @@ export const InputWrapper = styled.div<IInputWrapper>`
         bottom: 1.8rem;
       }
     }
+  }
+
+  .input-required {
+    color: red;
   }
 `;
