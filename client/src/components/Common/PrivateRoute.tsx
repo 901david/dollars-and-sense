@@ -21,7 +21,7 @@ export const PrivateRoute: React.FC<IPrivateRoute> = ({ route: Route }) => {
         setState(['isAuthenticated', 'loading'], [isAuthenticated, false]);
       })
       .catch(err => console.error(err));
-  }, []);
+  }, [setState]);
   if (loading) return <div>Loading....</div>;
   if (!isAuthenticated) return <Redirect to='/login' />;
   return <Route />;
