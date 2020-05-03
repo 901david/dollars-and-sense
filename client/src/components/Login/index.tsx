@@ -4,6 +4,7 @@ import { useMappedState } from 'react-use-mapped-state';
 
 import { Input } from '../Input/Index';
 import { Button } from '../Button/index';
+import { emailValidation } from '../Common/constants';
 
 const LoginWrapper = styled.main`
   background: black;
@@ -29,6 +30,7 @@ export const Login = () => {
     userName: '',
     pass: '',
   });
+  let emailValidationThrottler: any = null;
 
   const handleBlur = (stateName: string, stateValue: string) => {
     setState(stateName, stateValue);
@@ -36,6 +38,30 @@ export const Login = () => {
 
   const triggerSignUp = () => {
     //Triggger modal here
+  };
+
+  const handleEmailValidation = (value: string): any => {
+    return !!!emailValidation.exec(value);
+  };
+
+  const handlePasswordValidation = (value: string): any => {
+    const capsExist = new RegExp('[A-Z]', 'g');
+    const lowersExist = new RegExp('[a-z]', 'g');
+    const numbersExist = new RegExp('[0-9]', 'g');
+    const symbolsExist = new RegExp('[!@#$%^&*]', 'g');
+    const hasCaps = capsExist.exec(value);
+    const hasLowers = lowersExist.exec(value);
+    const hasNumbers = numbersExist.exec(value);
+    const hasSymbols = symbolsExist.exec(value);
+    const isOfLength = value.length > 7;
+    return (
+      !!!hasCaps ||
+      !!!hasLowers ||
+      !!!hasNumbers ||
+      !!!hasSymbols ||
+      !!!hasSymbols ||
+      !!!isOfLength
+    );
   };
 
   const isFilledOut = userName !== '' && pass !== '';
@@ -51,6 +77,7 @@ export const Login = () => {
           label='Email'
           blurFn={evt => handleBlur('userName', evt.target.value)}
           required={true}
+          validate={handleEmailValidation}
         />
         <Input
           name='password'
@@ -60,6 +87,7 @@ export const Login = () => {
           label='Password'
           blurFn={evt => handleBlur('pass', evt.target.value)}
           required={true}
+          validate={handlePasswordValidation}
         />
         <Button
           disabled={!isFilledOut}

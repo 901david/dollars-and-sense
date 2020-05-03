@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 interface IInputWrapper {
   input: string;
+  error: boolean;
 }
 
 export const InputWrapper = styled.div<IInputWrapper>`
@@ -21,7 +22,7 @@ export const InputWrapper = styled.div<IInputWrapper>`
   input {
     background: rgb(0, 0, 0, 0);
     border: none;
-    border-bottom: solid 5px white;
+    border-bottom: solid 5px ${({ error }) => (error ? 'red' : 'white')};
     width: 45vw;
     color: white;
     font-size: 1.5rem;

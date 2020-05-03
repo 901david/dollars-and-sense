@@ -11,6 +11,8 @@ interface IInput {
   type: CustomInputType;
   label: string;
   blurFn: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  validate?: (value: string) => boolean;
+  errorMessage?: string[];
 }
 
 export type CustomInputType =
@@ -30,8 +32,12 @@ export const Input: React.FC<IInput> = ({
   label,
   blurFn,
   required,
+  validate,
 }) => {
-  const [{ userInput }, setState] = useMappedState({ userInput: '' });
+  const [{ userInput, error }, setState] = useMappedState({
+    userInput: '',
+    error: false,
+  });
 
   const renderRequiredLabel = (): JSX.Element => (
     <span className='input-required' title='This field is required'>
@@ -40,7 +46,11 @@ export const Input: React.FC<IInput> = ({
   );
 
   const handleOnChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setState('userInput', evt.target.value);
+    let isValid = true;
+    if (typeof validate === 'function') {
+      isValid = validate(evt.target.value);
+    }
+    setState(['userInput', 'error'], [evt.target.value, isValid]);
   };
 
   const handleOnBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
@@ -50,7 +60,7 @@ export const Input: React.FC<IInput> = ({
   };
 
   const renderInput = () => (
-    <InputWrapper input={userInput}>
+    <InputWrapper input={userInput} error={error}>
       <input
         type={type}
         name={name}
