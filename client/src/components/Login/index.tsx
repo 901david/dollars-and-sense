@@ -1,6 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { useMappedState } from 'react-use-mapped-state';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
 import { Input } from '../Input/Index';
 import { Button } from '../Button/index';
@@ -24,7 +26,10 @@ const LoginWrapper = styled.main`
   }
 `;
 
-export const Login = () => {
+export const Login: React.FC<{
+  setUserAuthed: () => void;
+}> = ({ setUserAuthed }) => {
+  let history = useHistory();
   const [{ userName, pass, errored }, setState] = useMappedState({
     userName: '',
     pass: '',
@@ -37,6 +42,20 @@ export const Login = () => {
 
   const handleOnChange = (errored: boolean) => {
     setState('errored', errored);
+  };
+
+  const onLogin = async () => {
+    const {
+      data: { message },
+    } = await axios.post('/api/auth/login', {
+      email: userName,
+      user_password: pass,
+    });
+
+    if (message === 'Successfully Authenticated') {
+      setUserAuthed();
+      history.push('/');
+    }
   };
 
   const triggerSignUp = () => {
@@ -68,11 +87,7 @@ export const Login = () => {
           required={true}
           validator={'password'}
         />
-        <Button
-          disabled={errored}
-          text='Login'
-          clickHandler={data => console.log(data)}
-        />
+        <Button disabled={errored} text='Login' clickHandler={onLogin} />
         <div className='sign-up'>
           <p>
             Don't have an account yet?{' '}
