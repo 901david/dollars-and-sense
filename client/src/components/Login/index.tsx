@@ -25,13 +25,18 @@ const LoginWrapper = styled.main`
 `;
 
 export const Login = () => {
-  const [{ userName, pass }, setState] = useMappedState({
+  const [{ userName, pass, errored }, setState] = useMappedState({
     userName: '',
     pass: '',
+    errored: false,
   });
 
   const handleBlur = (stateName: string, stateValue: string) => {
     setState(stateName, stateValue);
+  };
+
+  const handleOnChange = (errored: boolean) => {
+    setState('errored', errored);
   };
 
   const triggerSignUp = () => {
@@ -39,7 +44,8 @@ export const Login = () => {
   };
 
   const isFilledOut = userName !== '' && pass !== '';
-  console.log('isFilledOut', isFilledOut);
+  console.log('isFilledOut', isFilledOut, 'errored', errored);
+  console.log('data', userName, pass);
   return (
     <LoginWrapper>
       <div className='login-container'>
@@ -50,6 +56,7 @@ export const Login = () => {
           type='text'
           label='Email'
           blurFn={evt => handleBlur('userName', evt.target.value)}
+          changeFn={handleOnChange}
           required={true}
           validator={'email'}
         />
@@ -59,12 +66,13 @@ export const Login = () => {
           inputId='password_input'
           type='password'
           label='Password'
+          changeFn={handleOnChange}
           blurFn={evt => handleBlur('pass', evt.target.value)}
           required={true}
           validator={'password'}
         />
         <Button
-          disabled={!isFilledOut}
+          disabled={errored || !isFilledOut}
           text='Login'
           clickHandler={data => console.log(data)}
         />

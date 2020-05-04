@@ -12,6 +12,7 @@ interface IInputProps {
   type: CustomInputType;
   label: string;
   blurFn: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  changeFn?: (errored: boolean) => void;
   validator?: CustomInputType;
 }
 
@@ -33,6 +34,7 @@ export const Input: React.FC<IInputProps> = ({
   blurFn,
   required,
   validator,
+  changeFn,
 }) => {
   const [{ userInput, error, errors }, setState] = useMappedState({
     userInput: '',
@@ -65,6 +67,10 @@ export const Input: React.FC<IInputProps> = ({
       ['userInput', 'error', 'errors'],
       [evt.target.value, isValid, errors]
     );
+
+    if (typeof changeFn === 'function') {
+      changeFn(isValid);
+    }
   };
 
   const handleOnBlur = (evt: React.FocusEvent<HTMLInputElement>) => {

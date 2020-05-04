@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 interface IButtonProps {
   text: string;
@@ -20,6 +20,22 @@ const CustomButton = styled.div<{ disabled: boolean }>`
   font-family: inherit;
   letter-spacing: 10px;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  transform: scale(1);
+  transition: all 0.5s;
+  ${({ disabled }) => {
+    return (
+      !disabled &&
+      css`
+        :hover {
+          transform: scale(1.05);
+        }
+
+        :click {
+          transform: scale(0.95);
+        }
+      `
+    );
+  }}
 `;
 
 export const Button: React.FC<IButtonProps> = ({

@@ -9,7 +9,6 @@ const passwordWithValidChars = /(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=
 const emailValidation = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 const validateEmail = (value: string) => {
-  console.log('LOOK', value, emailValidation.exec(value));
   const isInvalid = emailValidation.exec(value) !== null;
 
   const errors: string[] = [];
@@ -20,9 +19,6 @@ const validateEmail = (value: string) => {
 const validatePassword = (value: CustomInputType) => {
   const hasValidChars = passwordWithValidChars.test(value);
   const isOfLength = value.length > 7;
-  console.log(value);
-  console.log('hasValidChars', hasValidChars);
-  console.log('isOfLength', isOfLength);
 
   const errors: string[] = [];
 
