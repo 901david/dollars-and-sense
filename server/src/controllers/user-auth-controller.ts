@@ -56,34 +56,6 @@ export const handleLogin: RequestHandler = (req, res, next) => {
   })(req, res, next);
 };
 
-// export const handleUserLogin: RequestHandler = async (req, res) => {
-//   try {
-//     const { email, user_password } = req.body;
-//     if (email && user_password) {
-//       const userData = await getUserByEmail(email);
-//       const user = userData[0] as User;
-//       if (!user) {
-//         res.status(401).json({ msg: 'No such user found', user });
-//       }
-
-//       const isValidPass = await passwordIsCorrect(
-//         user_password,
-//         user.user_password
-//       );
-
-//       if (isValidPass) {
-//         const payload = { id: user.id };
-//         const token = jwt.sign(payload, jwtOptions.secretOrKey);
-//         res.json({ msg: 'ok', token: token });
-//       } else {
-//         res.status(401).json({ msg: 'Password is incorrect' });
-//       }
-//     }
-//   } catch (err) {
-//     throw err;
-//   }
-// };
-
 export const handleUserLogout: RequestHandler = (req, res) => {
   req.logout();
   res.redirect('/');
@@ -92,15 +64,6 @@ export const handleUserLogout: RequestHandler = (req, res) => {
 export const handleIsUserAuthenticated: RequestHandler = (req, res) => {
   res.json({ isAuthenticated: true });
 };
-
-// const passwordIsCorrect = (userEnteredPass: string, dbPass: string) => {
-//   return new Promise((resolve, reject) => {
-//     bcrypt.compare(userEnteredPass, dbPass, (err, result) => {
-//       if (err) reject(err);
-//       return resolve(result);
-//     });
-//   });
-// };
 
 export const protectRoute = (): RequestHandler => (req, res, next) => {
   if (req.isAuthenticated()) {

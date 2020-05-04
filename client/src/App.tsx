@@ -2,19 +2,10 @@ import React from 'react';
 import { Route, BrowserRouter as Router, Redirect } from 'react-router-dom';
 import { gql } from 'apollo-boost';
 import { useMappedState } from 'react-use-mapped-state';
-import axios from 'axios';
 
 import { MainDash } from './components/MainDash';
 import { PrivateRoute } from './components/Common/PrivateRoute';
 import { Login } from './components/Login';
-
-export const GET_USER = gql`
-  query User($id: Int!) {
-    user(id: $id) {
-      user_name
-    }
-  }
-`;
 
 const App = () => {
   const [{ isAuthenticated }, setState] = useMappedState({
@@ -28,7 +19,7 @@ const App = () => {
     //   setState('isAuthenticated', false);
     // }, 1000 * 60);
   };
-  console.log('AUTH STATUS', isAuthenticated);
+
   return (
     <div>
       <Router>
