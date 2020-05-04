@@ -13,7 +13,6 @@ interface IInputProps {
   label: string;
   blurFn: (e: React.ChangeEvent<HTMLInputElement>) => void;
   validator?: CustomInputType;
-  errorMessage?: string[];
 }
 
 export type CustomInputType =
@@ -35,9 +34,10 @@ export const Input: React.FC<IInputProps> = ({
   required,
   validator,
 }) => {
-  const [{ userInput, error }, setState] = useMappedState({
+  const [{ userInput, error, errors }, setState] = useMappedState({
     userInput: '',
     error: false,
+    errors: [],
   });
 
   const renderRequiredLabel = (): JSX.Element => (
@@ -48,13 +48,23 @@ export const Input: React.FC<IInputProps> = ({
 
   const handleOnChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     let isValid = true;
+    let errors: string[] = [];
+
     if (validator !== undefined || validator !== '') {
       const validatorFN = getValidator(validator as CustomInputType);
       if (validatorFN) {
-        isValid = validatorFN(evt.target.value as CustomInputType);
+        const { isValid: valid, errors: errs } = validatorFN(
+          evt.target.value as CustomInputType
+        );
+        isValid = valid;
+        errors = errs;
       }
     }
-    setState(['userInput', 'error'], [evt.target.value, isValid]);
+    console.log('errors', errors);
+    setState(
+      ['userInput', 'error', 'errors'],
+      [evt.target.value, isValid, errors]
+    );
   };
 
   const handleOnBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
@@ -63,9 +73,12 @@ export const Input: React.FC<IInputProps> = ({
     }
   };
 
+  const inputTitle = errors.length > 0 ? errors.join(', ') : '';
+
   const renderInput = () => (
     <InputWrapper input={userInput} error={error}>
       <input
+        title={inputTitle}
         type={type}
         name={name}
         id={inputId}
@@ -74,7 +87,7 @@ export const Input: React.FC<IInputProps> = ({
         onBlur={handleOnBlur}
         required={required ?? false}
       />
-      <label htmlFor={name} id={labelId}>
+      <label htmlFor={name} id={labelId} title={inputTitle}>
         {label} {required ? renderRequiredLabel() : null}
       </label>
     </InputWrapper>
