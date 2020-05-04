@@ -1,11 +1,12 @@
 import React from 'react';
 import { Route, BrowserRouter as Router, Redirect } from 'react-router-dom';
-import { gql } from 'apollo-boost';
 import { useMappedState } from 'react-use-mapped-state';
 
 import { MainDash } from './components/MainDash';
 import { PrivateRoute } from './components/Common/PrivateRoute';
 import { Login } from './components/Login';
+import { Modal } from './components/Modal';
+import { Signin } from './components/Signin';
 
 const App = () => {
   const [{ isAuthenticated }, setState] = useMappedState({

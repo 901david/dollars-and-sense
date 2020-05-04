@@ -6,6 +6,8 @@ import { useHistory } from 'react-router-dom';
 
 import { Input } from '../Input/Index';
 import { Button } from '../Button/index';
+import { Modal } from '../Modal';
+import { Signin } from '../Signin';
 
 const LoginWrapper = styled.main`
   background: black;
@@ -30,10 +32,11 @@ export const Login: React.FC<{
   setUserAuthed: () => void;
 }> = ({ setUserAuthed }) => {
   let history = useHistory();
-  const [{ userName, pass, errored }, setState] = useMappedState({
+  const [{ userName, pass, errored, signInOpen }, setState] = useMappedState({
     userName: '',
     pass: '',
     errored: true,
+    signInOpen: false,
   });
 
   const handleBlur = (stateName: string, stateValue: string) => {
@@ -58,43 +61,48 @@ export const Login: React.FC<{
     }
   };
 
-  const triggerSignUp = () => {
-    //Triggger modal here
+  const handleSignInTrigger = () => {
+    setState('signInOpen', !signInOpen);
   };
 
   return (
-    <LoginWrapper>
-      <div className='login-container'>
-        <Input
-          name='email'
-          labelId='email_label'
-          inputId='email_input'
-          type='text'
-          label='Email'
-          blurFn={evt => handleBlur('userName', evt.target.value)}
-          changeFn={handleOnChange}
-          required={true}
-          validator={'email'}
-        />
-        <Input
-          name='password'
-          labelId='password_label'
-          inputId='password_input'
-          type='password'
-          label='Password'
-          changeFn={handleOnChange}
-          blurFn={evt => handleBlur('pass', evt.target.value)}
-          required={true}
-          validator={'password'}
-        />
-        <Button disabled={errored} text='Login' clickHandler={onLogin} />
-        <div className='sign-up'>
-          <p>
-            Don't have an account yet?{' '}
-            <span onClick={triggerSignUp}>Sign up Here!</span>
-          </p>
+    <>
+      <LoginWrapper>
+        <div className='login-container'>
+          <Input
+            name='email'
+            labelId='email_label'
+            inputId='email_input'
+            type='text'
+            label='Email'
+            blurFn={evt => handleBlur('userName', evt.target.value)}
+            changeFn={handleOnChange}
+            required={true}
+            validator={'email'}
+          />
+          <Input
+            name='password'
+            labelId='password_label'
+            inputId='password_input'
+            type='password'
+            label='Password'
+            changeFn={handleOnChange}
+            blurFn={evt => handleBlur('pass', evt.target.value)}
+            required={true}
+            validator={'password'}
+          />
+          <Button disabled={errored} text='Login' clickHandler={onLogin} />
+          <div className='sign-up'>
+            <p>
+              Don't have an account yet?{' '}
+              <span onClick={handleSignInTrigger}>Sign up Here!</span>
+            </p>
+          </div>
         </div>
-      </div>
-    </LoginWrapper>
+      </LoginWrapper>
+      <Modal open={signInOpen} toggle={handleSignInTrigger}>
+        <Signin />
+      </Modal>
+    </>
   );
 };
