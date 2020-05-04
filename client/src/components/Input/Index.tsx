@@ -2,8 +2,9 @@ import React from 'react';
 import { useMappedState } from 'react-use-mapped-state';
 
 import { InputWrapper } from './Input-Components';
+import { getValidator } from '../Common/Validations';
 
-interface IInput {
+interface IInputProps {
   name: string;
   labelId: string;
   inputId: string;
@@ -11,7 +12,7 @@ interface IInput {
   type: CustomInputType;
   label: string;
   blurFn: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  validate?: (value: string) => boolean;
+  validator?: CustomInputType;
   errorMessage?: string[];
 }
 
@@ -24,7 +25,7 @@ export type CustomInputType =
   | 'text'
   | 'zip';
 
-export const Input: React.FC<IInput> = ({
+export const Input: React.FC<IInputProps> = ({
   name,
   labelId,
   inputId,
@@ -32,7 +33,7 @@ export const Input: React.FC<IInput> = ({
   label,
   blurFn,
   required,
-  validate,
+  validator,
 }) => {
   const [{ userInput, error }, setState] = useMappedState({
     userInput: '',
@@ -47,8 +48,11 @@ export const Input: React.FC<IInput> = ({
 
   const handleOnChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     let isValid = true;
-    if (typeof validate === 'function') {
-      isValid = validate(evt.target.value);
+    if (validator !== undefined || validator !== '') {
+      const validatorFN = getValidator(validator as CustomInputType);
+      if (validatorFN) {
+        isValid = validatorFN(evt.target.value as CustomInputType);
+      }
     }
     setState(['userInput', 'error'], [evt.target.value, isValid]);
   };
