@@ -62,7 +62,7 @@ export const Input: React.FC<IInputProps> = ({
         errors = errs;
       }
     }
-    console.log('errors', errors);
+
     setState(
       ['userInput', 'error', 'errors'],
       [evt.target.value, isValid, errors]

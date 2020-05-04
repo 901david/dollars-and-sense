@@ -28,7 +28,7 @@ export const Login = () => {
   const [{ userName, pass, errored }, setState] = useMappedState({
     userName: '',
     pass: '',
-    errored: false,
+    errored: true,
   });
 
   const handleBlur = (stateName: string, stateValue: string) => {
@@ -43,9 +43,6 @@ export const Login = () => {
     //Triggger modal here
   };
 
-  const isFilledOut = userName !== '' && pass !== '';
-  console.log('isFilledOut', isFilledOut, 'errored', errored);
-  console.log('data', userName, pass);
   return (
     <LoginWrapper>
       <div className='login-container'>
@@ -72,7 +69,7 @@ export const Login = () => {
           validator={'password'}
         />
         <Button
-          disabled={errored || !isFilledOut}
+          disabled={errored}
           text='Login'
           clickHandler={data => console.log(data)}
         />
