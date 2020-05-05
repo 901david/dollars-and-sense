@@ -1,13 +1,28 @@
 import { RequestHandler } from 'express';
 import bcrypt from 'bcrypt';
-import { RowDataPacket } from 'mysql2';
 import passport from 'passport';
+import axios from 'axios';
 
 import { makeQuery } from '../common/promisified-db-query';
 import { User } from '../models/user.type';
 import { UserDbModel } from '../db/models/user-model';
 import { UserCreationTransferObject } from '../models/user-creation-type';
-import { ExpressHandlerCB } from '../models/express-handler-cb';
+import {
+  CONFIRMATION_EMAIL_FROM,
+  CONFIRMATION_EMAIL_SUBJECT,
+  CONFIRMATION_EMAIL_HTML,
+} from '../common/constants';
+
+const { API_GATEWAY_ENDPOINT, API_GATEWAY_SECRET } = process.env;
+
+type ResultsSetHeader = {
+  fieldCount: number;
+  affectedRows: number;
+  insertId: number;
+  info: string;
+  serverStatus: number;
+  warningStatus: number;
+};
 
 export const handleUserPassword = (userData: User) => {
   return new Promise((resolve, reject) => {
@@ -26,6 +41,18 @@ export const getUserByEmail = (email: string) => {
   return makeQuery(`SELECT * FROM Users WHERE email="${email}"`);
 };
 
+const triggerConfirmationEmail = async (email: string, id: number) => {
+  const emailData = {
+    to: email,
+    from: CONFIRMATION_EMAIL_FROM,
+    subject: CONFIRMATION_EMAIL_SUBJECT,
+    html: CONFIRMATION_EMAIL_HTML(id),
+  };
+  return axios.post(API_GATEWAY_ENDPOINT!, emailData, {
+    headers: { 'x-api-key': API_GATEWAY_SECRET },
+  });
+};
+
 export const handleUserRegister: RequestHandler = async (req, res) => {
   try {
     const { body: userCreationData } = req;
@@ -33,9 +60,14 @@ export const handleUserRegister: RequestHandler = async (req, res) => {
     userCreationData.user_password = hashedPass;
     UserDbModel.create(
       userCreationData as UserCreationTransferObject,
-      (results: RowDataPacket[]) => {
-        //TODO: Sent req. to API Gateway hitting lambda sending confirmation email
-        res.json({ message: 'Successfully Registered User' });
+      async (results: any) => {
+        if (results) {
+          await triggerConfirmationEmail(
+            userCreationData.email,
+            results.insertId
+          );
+          res.json({ message: 'Successfully Registered User' });
+        }
       }
     );
   } catch (error) {
