@@ -3,12 +3,14 @@ import styled from 'styled-components';
 interface IInputWrapper {
   input: string;
   error: boolean;
+  defaultColor?: string;
 }
 
 export const InputWrapper = styled.div<IInputWrapper>`
   position: relative;
   margin: 3rem 0;
-  color: white;
+  color: ${({ defaultColor }) =>
+    defaultColor !== undefined ? defaultColor : 'white'};
   label {
     position: absolute;
     left: 0;
@@ -22,9 +24,12 @@ export const InputWrapper = styled.div<IInputWrapper>`
   input {
     background: rgb(0, 0, 0, 0);
     border: none;
-    border-bottom: solid 5px ${({ error }) => (error ? 'red' : 'white')};
+    border-bottom: solid 5px
+      ${({ error, defaultColor }) =>
+        error ? 'red' : defaultColor !== undefined ? defaultColor : 'white'};
     width: 45vw;
-    color: white;
+    color: ${({ defaultColor }) =>
+      defaultColor !== undefined ? defaultColor : 'white'};
     font-size: 1.5rem;
     &:focus {
       outline: none;

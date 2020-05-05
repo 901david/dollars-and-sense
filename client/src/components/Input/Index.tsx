@@ -14,6 +14,7 @@ interface IInputProps {
   blurFn: (e: React.ChangeEvent<HTMLInputElement>) => void;
   changeFn?: (errored: boolean) => void;
   validator?: CustomInputType;
+  defaultColor?: string;
 }
 
 export type CustomInputType =
@@ -35,6 +36,7 @@ export const Input: React.FC<IInputProps> = ({
   required,
   validator,
   changeFn,
+  defaultColor,
 }) => {
   const [{ userInput, error, errors }, setState] = useMappedState({
     userInput: '',
@@ -49,7 +51,7 @@ export const Input: React.FC<IInputProps> = ({
   );
 
   const handleOnChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    let isValid = true;
+    let isValid = false;
     let errors: string[] = [];
 
     if (validator !== undefined || validator !== '') {
@@ -82,7 +84,7 @@ export const Input: React.FC<IInputProps> = ({
   const inputTitle = errors.length > 0 ? errors.join(', ') : '';
 
   const renderInput = () => (
-    <InputWrapper input={userInput} error={error}>
+    <InputWrapper defaultColor={defaultColor} input={userInput} error={error}>
       <input
         title={inputTitle}
         type={type}

@@ -32,11 +32,16 @@ export const Login: React.FC<{
   setUserAuthed: () => void;
 }> = ({ setUserAuthed }) => {
   let history = useHistory();
-  const [{ userName, pass, errored, signInOpen }, setState] = useMappedState({
+  const [
+    { userName, pass, errored, signInOpen, signInSuccess, toasterShown },
+    setState,
+  ] = useMappedState({
     userName: '',
     pass: '',
     errored: true,
     signInOpen: false,
+    signInSuccess: false,
+    toasterShown: false,
   });
 
   const handleBlur = (stateName: string, stateValue: string) => {
@@ -63,6 +68,10 @@ export const Login: React.FC<{
 
   const handleSignInTrigger = () => {
     setState('signInOpen', !signInOpen);
+  };
+
+  const handleSignInSuccess = () => {
+    setState(['signInOpen', 'toasterShown'], [false, true]);
   };
 
   return (
@@ -101,7 +110,7 @@ export const Login: React.FC<{
         </div>
       </LoginWrapper>
       <Modal open={signInOpen} toggle={handleSignInTrigger}>
-        <Signin />
+        <Signin handleSignInSuccess={handleSignInSuccess} />
       </Modal>
     </>
   );

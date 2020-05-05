@@ -26,16 +26,19 @@ export const getUserByEmail = (email: string) => {
 };
 
 export const handleUserRegister: RequestHandler = async (req, res) => {
-  const { body: userCreationData } = req;
-  const hashedPass = await handleUserPassword(userCreationData);
-  userCreationData.user_password = hashedPass;
-  UserDbModel.create(
-    userCreationData as UserCreationTransferObject,
-    (results: RowDataPacket[]) => {
-      console.log(req.user);
-      res.json(results);
-    }
-  );
+  try {
+    const { body: userCreationData } = req;
+    const hashedPass = await handleUserPassword(userCreationData);
+    userCreationData.user_password = hashedPass;
+    UserDbModel.create(
+      userCreationData as UserCreationTransferObject,
+      (results: RowDataPacket[]) => {
+        res.json({ message: 'Successfully Registered User' });
+      }
+    );
+  } catch (error) {
+    res.status(400).json({ error });
+  }
 };
 
 export const handleLogin: RequestHandler = (req, res, next) => {
