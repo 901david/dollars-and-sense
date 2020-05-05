@@ -8,6 +8,7 @@ import { Input } from '../Input/Index';
 import { Button } from '../Button/index';
 import { Modal } from '../Modal';
 import { Signin } from '../Signin';
+import { Toaster } from '../Toaster';
 
 const LoginWrapper = styled.main`
   background: black;
@@ -33,7 +34,16 @@ export const Login: React.FC<{
 }> = ({ setUserAuthed }) => {
   let history = useHistory();
   const [
-    { userName, pass, errored, signInOpen, signInSuccess, toasterShown },
+    {
+      userName,
+      pass,
+      errored,
+      signInOpen,
+      signInSuccess,
+      toasterShown,
+      emailUnconfirmed,
+      emailNotFound,
+    },
     setState,
   ] = useMappedState({
     userName: '',
@@ -42,6 +52,8 @@ export const Login: React.FC<{
     signInOpen: false,
     signInSuccess: false,
     toasterShown: false,
+    emailUnconfirmed: false,
+    emailNotFound: false,
   });
 
   const handleBlur = (stateName: string, stateValue: string) => {
@@ -53,16 +65,31 @@ export const Login: React.FC<{
   };
 
   const onLogin = async () => {
-    const {
-      data: { message },
-    } = await axios.post('/api/auth/login', {
-      email: userName,
-      user_password: pass,
-    });
-
-    if (message === 'Successfully Authenticated') {
-      setUserAuthed();
-      history.push('/');
+    try {
+      const {
+        data: { message },
+      } = await axios.post('/api/auth/confirm', {
+        email: userName,
+      });
+      console.log('MESSAGE', message);
+      if (message === 'Email is confirmed in system') {
+        const results = await axios.post('/api/auth/login', {
+          email: userName,
+          user_password: pass,
+        });
+        if (results.data.message === 'Successfully Authenticated') {
+          setUserAuthed();
+          history.push('/');
+        }
+      }
+    } catch (err) {
+      console.log(err.message);
+      if (err.message === 'Request failed with status code 404') {
+        setState(['toasterShown', 'emailNotFound'], [true, true]);
+      }
+      if (err.message === 'Request failed with status code 425') {
+        setState(['toasterShown', 'emailUnconfirmed'], [true, true]);
+      }
     }
   };
 
@@ -71,11 +98,35 @@ export const Login: React.FC<{
   };
 
   const handleSignInSuccess = () => {
-    setState(['signInOpen', 'toasterShown'], [false, true]);
+    setState(
+      ['signInOpen', 'toasterShown', 'signInSuccess'],
+      [false, true, true]
+    );
   };
+
+  const userMessageEmailNeedsConfirmation =
+    'Please check your email for a confirmation email.  You must confirm your email to login.';
+
+  const userMessageEmailNotFound =
+    'Email not found. Please check your email address or sign up.';
 
   return (
     <>
+      <Toaster
+        dismissFn={() => setState('toasterShown', false)}
+        dismissible={true}
+        triggered={toasterShown}
+        message={
+          signInSuccess || emailUnconfirmed
+            ? userMessageEmailNeedsConfirmation
+            : userMessageEmailNotFound
+        }
+        time={5000}
+        type={
+          signInSuccess ? 'success' : emailUnconfirmed ? 'warning' : 'alert'
+        }
+      />
+
       <LoginWrapper>
         <div className='login-container'>
           <Input

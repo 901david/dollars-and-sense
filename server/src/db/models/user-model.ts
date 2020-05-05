@@ -2,10 +2,15 @@ import { orm } from '../../config/orm';
 import { ExpressHandlerCB } from '../../models/express-handler-cb';
 import { UserCreationTransferObject } from '../../models/user-creation-type';
 import { User } from '../../models/user.type';
+import { RowDataPacket } from 'mysql2';
 
 export class UserDbModel {
   static get(cb: ExpressHandlerCB) {
     orm.get('Users', cb);
+  }
+
+  static getOneByEmail(email: string) {
+    return orm.getOneByEmail('Users', email);
   }
 
   static create(

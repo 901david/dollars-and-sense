@@ -25,6 +25,10 @@ export class orm {
     }
   }
 
+  static async getOneByEmail(tableName: string, email: string) {
+    return makeQuery(`SELECT * FROM ${tableName} WHERE email='${email}'`);
+  }
+
   static async update<T extends Object, U extends Array<Object>>(
     tableName: string,
     conditions: T,

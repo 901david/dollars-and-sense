@@ -6,6 +6,7 @@ import {
   handleUserLogout,
   handleIsUserAuthenticated,
   handleLogin,
+  handleEmailConfirmation,
 } from '../controllers/user-auth-controller';
 
 const userAuthRouter = Router();
@@ -16,6 +17,7 @@ const userAuthRouter = Router();
 //   handleIsUserAuthenticated
 // );
 userAuthRouter.post('/register', handleUserRegister);
+userAuthRouter.post('/confirm', handleEmailConfirmation);
 userAuthRouter.post('/login', handleLogin);
 userAuthRouter.post('/logout', handleUserLogout);
 
