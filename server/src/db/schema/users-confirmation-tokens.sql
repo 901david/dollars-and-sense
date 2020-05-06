@@ -1,0 +1,10 @@
+CREATE TABLE UsersTokens
+(
+    id INTEGER(10) NOT NULL
+    AUTO_INCREMENT PRIMARY KEY,
+    user_id INTEGER
+    (10) NOT NULL,
+    user_token VARCHAR
+    (50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

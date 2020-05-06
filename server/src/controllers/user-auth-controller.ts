@@ -2,6 +2,8 @@ import { RequestHandler } from 'express';
 import bcrypt from 'bcrypt';
 import passport from 'passport';
 import axios from 'axios';
+const UIDGenerator = require('uid-generator');
+const uidgen = new UIDGenerator();
 
 import { makeQuery } from '../common/promisified-db-query';
 import { User } from '../models/user.type';
@@ -14,7 +16,6 @@ import {
 } from '../common/constants';
 
 const { API_GATEWAY_ENDPOINT, API_GATEWAY_SECRET } = process.env;
-
 type ResultsSetHeader = {
   fieldCount: number;
   affectedRows: number;
@@ -23,7 +24,6 @@ type ResultsSetHeader = {
   serverStatus: number;
   warningStatus: number;
 };
-
 export const handleUserPassword = (userData: User) => {
   return new Promise((resolve, reject) => {
     bcrypt.hash(userData.user_password, 10, function (err, hash) {
@@ -37,19 +37,37 @@ export const getUser = (id: number) => {
   return makeQuery(`SELECT * FROM Users WHERE id=${id}`);
 };
 
+const setUUIDForUser = (uuid: string, id: number) => {
+  console.log('HEEREERERE', typeof uuid, typeof id);
+  return makeQuery(
+    `INSERT INTO UsersTokens (user_id, user_token) VALUES (${id}, "${uuid}")`
+  );
+};
+
 export const getUserByEmail = (email: string) => {
   return makeQuery(`SELECT * FROM Users WHERE email="${email}"`);
 };
 
-const triggerConfirmationEmail = async (email: string, id: number) => {
-  const emailData = {
-    to: email,
-    from: CONFIRMATION_EMAIL_FROM,
-    subject: CONFIRMATION_EMAIL_SUBJECT,
-    html: CONFIRMATION_EMAIL_HTML(id),
-  };
-  return axios.post(API_GATEWAY_ENDPOINT!, emailData, {
-    headers: { 'x-api-key': API_GATEWAY_SECRET },
+const triggerConfirmationEmail = (email: string, id: number) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const UUID = await uidgen.generate();
+      const emailData = {
+        to: email,
+        from: CONFIRMATION_EMAIL_FROM,
+        subject: CONFIRMATION_EMAIL_SUBJECT,
+        html: CONFIRMATION_EMAIL_HTML(UUID),
+      };
+      await axios.post(API_GATEWAY_ENDPOINT!, emailData, {
+        headers: { 'x-api-key': API_GATEWAY_SECRET },
+      });
+
+      await setUUIDForUser(UUID, id);
+      resolve({ success: true });
+    } catch (err) {
+      //TODO: We need to roll back if one fails.......
+      reject(err);
+    }
   });
 };
 
@@ -117,12 +135,6 @@ export const handleLogin: RequestHandler = async (req, res, next) => {
       return res.status(401).json({ message: 'User not authorized' });
     }
     return res.status(200).json({ message: 'Successfully Authenticated' });
-    // req.logIn(user, function (err) {
-    //   if (err) {
-    //     return next(err);
-    //   }
-    //   return res.status(200).json({ message: 'Successfully Authenticated' });
-    // });
   })(req, res, next);
 };
 

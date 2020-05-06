@@ -88,6 +88,7 @@ export const Login: React.FC<{
         }
       }
     } catch (err) {
+      setState('loading', false);
       if (err.message === 'Request failed with status code 404') {
         setState(['toasterShown', 'emailNotFound'], [true, true]);
       }
