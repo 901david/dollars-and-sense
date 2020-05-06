@@ -46,6 +46,7 @@ export const Login: React.FC<{
       emailNotFound,
       passwordWrong,
       loading,
+      duplicateEmail,
     },
     setState,
   ] = useMappedState({
@@ -59,6 +60,7 @@ export const Login: React.FC<{
     emailNotFound: false,
     passwordWrong: false,
     loading: false,
+    duplicateEmail: false,
   });
 
   const handleBlur = (stateName: string, stateValue: string) => {
@@ -118,11 +120,21 @@ export const Login: React.FC<{
 
   const userMessageEmailNotFound = 'Email or Password not correct.';
 
+  const duplicateEmqailMessage =
+    'Email already exists in system. Please choose another or log in if you already have an account';
+
   const getMessageColor = () => {
     if (signInSuccess) return 'success';
-    if (emailNotFound || passwordWrong) return 'alert';
+    if (emailNotFound || passwordWrong || duplicateEmail) return 'alert';
     if (emailUnconfirmed) return 'warning';
     return 'success';
+  };
+
+  const getMessage = () => {
+    if (signInSuccess || emailUnconfirmed)
+      return userMessageEmailNeedsConfirmation;
+    if (duplicateEmail) return duplicateEmqailMessage;
+    return userMessageEmailNotFound;
   };
 
   const dismissToaster = () =>
@@ -133,9 +145,14 @@ export const Login: React.FC<{
         'emailNotFound',
         'emailUnconfirmed',
         'passwordWrong',
+        'duplicateEmail',
       ],
-      [false, false, false, false, false]
+      [false, false, false, false, false, false]
     );
+
+  const duplicateEmailTriggered = () => {
+    setState(['toasterShown', 'duplicateEmail'], [true, true]);
+  };
 
   return (
     <>
@@ -144,11 +161,7 @@ export const Login: React.FC<{
         dismissFn={dismissToaster}
         dismissible={true}
         triggered={toasterShown}
-        message={
-          signInSuccess || emailUnconfirmed
-            ? userMessageEmailNeedsConfirmation
-            : userMessageEmailNotFound
-        }
+        message={getMessage()}
         time={5000}
         type={getMessageColor()}
       />
@@ -188,6 +201,7 @@ export const Login: React.FC<{
       </LoginWrapper>
       <Modal open={signInOpen} toggle={handleSignInTrigger}>
         <Signin
+          duplicateEmailTriggered={duplicateEmailTriggered}
           triggerLoader={(trigger: boolean) => setState('loading', trigger)}
           handleSignInSuccess={handleSignInSuccess}
         />

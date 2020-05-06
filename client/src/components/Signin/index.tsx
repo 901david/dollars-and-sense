@@ -8,11 +8,13 @@ import { Input } from '../Input/Index';
 interface ISigninProps {
   handleSignInSuccess: () => void;
   triggerLoader: (trigger: boolean) => void;
+  duplicateEmailTriggered: () => void;
 }
 
 export const Signin: React.FC<ISigninProps> = ({
   handleSignInSuccess,
   triggerLoader,
+  duplicateEmailTriggered,
 }) => {
   const [
     { userName, email, emailConfirm, pass, passConfirm, errored },
@@ -35,16 +37,23 @@ export const Signin: React.FC<ISigninProps> = ({
   };
 
   const onSignUp = async () => {
-    triggerLoader(true);
-    const results = await axios.post('/api/auth/register', {
-      email,
-      user_password: pass,
-      user_name: userName,
-    });
+    try {
+      triggerLoader(true);
+      const results = await axios.post('/api/auth/register', {
+        email,
+        user_password: pass,
+        user_name: userName,
+      });
 
-    if (results.data.message === 'Successfully Registered User') {
-      triggerLoader(false);
-      handleSignInSuccess();
+      if (results.data.message === 'Successfully Registered User') {
+        triggerLoader(false);
+        handleSignInSuccess();
+      }
+    } catch (error) {
+      if (error.message === 'Request failed with status code 409') {
+        triggerLoader(false);
+        duplicateEmailTriggered();
+      }
     }
   };
 

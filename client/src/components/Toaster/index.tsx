@@ -44,6 +44,7 @@ const ToasterWrapper = styled.div<IToasterWrapperProps>`
   position: absolute;
   top: 0;
   width: 100%;
+  z-index: 1010;
   justify-content: center;
   ${({ opened }) => {
     console.log('OPENED', opened);

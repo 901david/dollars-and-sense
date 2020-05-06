@@ -74,6 +74,14 @@ const triggerConfirmationEmail = (email: string, id: number) => {
 export const handleUserRegister: RequestHandler = async (req, res) => {
   try {
     const { body: userCreationData } = req;
+    const emailExists = await getUserByEmail(userCreationData.email).then(
+      users => users.length > 0
+    );
+
+    if (emailExists) {
+      res.status(409).json({ message: 'Email already exists' });
+    }
+
     const hashedPass = await handleUserPassword(userCreationData);
     userCreationData.user_password = hashedPass;
     UserDbModel.create(
