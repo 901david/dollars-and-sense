@@ -109,19 +109,20 @@ export const isUserEmailConfirmed = async (email: string) => {
 
 export const handleLogin: RequestHandler = async (req, res, next) => {
   passport.authenticate('local', (err, user) => {
-    console.log(user);
+    console.log('USER', user, 'err', err);
     if (err) {
       return next(err);
     }
     if (!user) {
-      return res.redirect('/error');
+      return res.status(401).json({ message: 'User not authorized' });
     }
-    req.logIn(user, function (err) {
-      if (err) {
-        return next(err);
-      }
-      return res.status(200).json({ message: 'Successfully Authenticated' });
-    });
+    return res.status(200).json({ message: 'Successfully Authenticated' });
+    // req.logIn(user, function (err) {
+    //   if (err) {
+    //     return next(err);
+    //   }
+    //   return res.status(200).json({ message: 'Successfully Authenticated' });
+    // });
   })(req, res, next);
 };
 

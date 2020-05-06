@@ -22,14 +22,13 @@ export const setUpAuthentication = (app: Express) => {
         passwordField: 'user_password',
       },
       async (email, password, done) => {
-        console.log('IN PASSPORT', email, password);
         try {
           const user = await getUserByEmail(email).then(res => res[0]);
           if (!user) {
             return done(null, false, { message: 'Incorrect email.' });
           }
 
-          if (!passwordIsCorrect(password, user.user_password)) {
+          if (!(await passwordIsCorrect(password, user.user_password))) {
             return done(null, false, { message: 'Incorrect password.' });
           }
 

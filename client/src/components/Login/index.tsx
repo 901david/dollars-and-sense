@@ -30,7 +30,7 @@ const LoginWrapper = styled.main`
 `;
 
 export const Login: React.FC<{
-  setUserAuthed: () => void;
+  setUserAuthed: (bool: boolean) => void;
 }> = ({ setUserAuthed }) => {
   let history = useHistory();
   const [
@@ -43,6 +43,7 @@ export const Login: React.FC<{
       toasterShown,
       emailUnconfirmed,
       emailNotFound,
+      passwordWrong,
     },
     setState,
   ] = useMappedState({
@@ -51,9 +52,10 @@ export const Login: React.FC<{
     errored: true,
     signInOpen: false,
     signInSuccess: false,
-    toasterShown: false,
+    toasterShown: undefined,
     emailUnconfirmed: false,
     emailNotFound: false,
+    passwordWrong: false,
   });
 
   const handleBlur = (stateName: string, stateValue: string) => {
@@ -78,7 +80,7 @@ export const Login: React.FC<{
           user_password: pass,
         });
         if (results.data.message === 'Successfully Authenticated') {
-          setUserAuthed();
+          setUserAuthed(true);
           history.push('/');
         }
       }
@@ -90,8 +92,23 @@ export const Login: React.FC<{
       if (err.message === 'Request failed with status code 425') {
         setState(['toasterShown', 'emailUnconfirmed'], [true, true]);
       }
+
+      if (err.message === 'Request failed with status code 401') {
+        setState(['toasterShown', 'passwordWrong'], [true, true]);
+      }
     }
   };
+
+  console.log(
+    'toasterShown',
+    toasterShown,
+    'emailUnconfirmed',
+    emailUnconfirmed,
+    'emailNotFound',
+    emailNotFound,
+    'signInSuccess',
+    signInSuccess
+  );
 
   const handleSignInTrigger = () => {
     setState('signInOpen', !signInOpen);
@@ -107,13 +124,31 @@ export const Login: React.FC<{
   const userMessageEmailNeedsConfirmation =
     'Please check your email for a confirmation email.  You must confirm your email to login.';
 
-  const userMessageEmailNotFound =
-    'Email not found. Please check your email address or sign up.';
+  const userMessageEmailNotFound = 'Email or Password not correct.';
+
+  const getMessageColor = () => {
+    if (signInSuccess) return 'success';
+    if (emailNotFound || passwordWrong) return 'alert';
+    if (emailUnconfirmed) return 'warning';
+    return 'success';
+  };
+
+  const dismissToaster = () =>
+    setState(
+      [
+        'toasterShown',
+        'signInSuccess',
+        'emailNotFound',
+        'emailUnconfirmed',
+        'passwordWrong',
+      ],
+      [false, false, false, false, false]
+    );
 
   return (
     <>
       <Toaster
-        dismissFn={() => setState('toasterShown', false)}
+        dismissFn={dismissToaster}
         dismissible={true}
         triggered={toasterShown}
         message={
@@ -122,9 +157,7 @@ export const Login: React.FC<{
             : userMessageEmailNotFound
         }
         time={5000}
-        type={
-          signInSuccess ? 'success' : emailUnconfirmed ? 'warning' : 'alert'
-        }
+        type={getMessageColor()}
       />
 
       <LoginWrapper>

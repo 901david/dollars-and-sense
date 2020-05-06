@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { useMappedState } from 'react-use-mapped-state';
 
 type ToasterStyleType = 'success' | 'alert' | 'warning';
@@ -20,8 +20,8 @@ interface IToasterWrapperProps {
 
 const colorMappings = new Map<ToasterStyleType, string>([
   ['success', 'green'],
-  ['alert', 'yellow'],
-  ['warning', 'red'],
+  ['alert', 'red'],
+  ['warning', 'yellow'],
 ]);
 
 const toasterIn = keyframes`
@@ -45,7 +45,13 @@ const ToasterWrapper = styled.div<IToasterWrapperProps>`
   top: 0;
   width: 100%;
   justify-content: center;
-  animation: ${({ opened }) => (opened ? toasterIn : toasterOut)} 2s forwards;
+  ${({ opened }) => {
+    console.log('OPENED', opened);
+    if (opened === undefined) return '';
+    return css`
+      animation: ${opened ? toasterIn : toasterOut} 2s forwards;
+    `;
+  }}
 
   .toaster-inner-wrapper {
     width: 65vh;
@@ -74,7 +80,7 @@ export const Toaster: React.FC<IToasterProps> = ({
   triggered,
   dismissFn,
 }) => {
-  const [{ opened }, setState] = useMappedState({ opened: false });
+  const [{ opened }, setState] = useMappedState({ opened: undefined });
 
   let timer: any;
 
@@ -85,7 +91,9 @@ export const Toaster: React.FC<IToasterProps> = ({
     }
 
     if (typeof dismissFn === 'function') {
-      dismissFn();
+      setTimeout(() => {
+        dismissFn();
+      }, 1000 * 2);
     }
   };
 

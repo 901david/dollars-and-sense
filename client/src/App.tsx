@@ -13,8 +13,8 @@ const App = () => {
     isAuthenticated: false,
   });
 
-  const setUserAuthed = () => {
-    setState('isAuthenticated', true);
+  const setUserAuthed = (authenticated: boolean) => {
+    setState('isAuthenticated', authenticated);
     //TODO: how do we expire this weirdness?
     // setTimeout(() => {
     //   setState('isAuthenticated', false);
@@ -26,7 +26,13 @@ const App = () => {
       <Router>
         <PrivateRoute
           isAuthenticated={isAuthenticated}
-          route={() => <Route exact path='/' component={MainDash} />}
+          route={() => (
+            <Route
+              exact
+              path='/'
+              component={() => <MainDash setUserAuthed={setUserAuthed} />}
+            />
+          )}
         />
         <Route
           path='/login'
