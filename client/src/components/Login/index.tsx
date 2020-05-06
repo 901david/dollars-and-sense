@@ -9,6 +9,7 @@ import { Button } from '../Button/index';
 import { Modal } from '../Modal';
 import { Signin } from '../Signin';
 import { Toaster } from '../Toaster';
+import { Loader } from '../Loader';
 
 const LoginWrapper = styled.main`
   background: black;
@@ -44,6 +45,7 @@ export const Login: React.FC<{
       emailUnconfirmed,
       emailNotFound,
       passwordWrong,
+      loading,
     },
     setState,
   ] = useMappedState({
@@ -56,6 +58,7 @@ export const Login: React.FC<{
     emailUnconfirmed: false,
     emailNotFound: false,
     passwordWrong: false,
+    loading: false,
   });
 
   const handleBlur = (stateName: string, stateValue: string) => {
@@ -67,13 +70,13 @@ export const Login: React.FC<{
   };
 
   const onLogin = async () => {
+    setState('loading', true);
     try {
       const {
         data: { message },
       } = await axios.post('/api/auth/confirm', {
         email: userName,
       });
-      console.log('MESSAGE', message);
       if (message === 'Email is confirmed in system') {
         const results = await axios.post('/api/auth/login', {
           email: userName,
@@ -85,7 +88,6 @@ export const Login: React.FC<{
         }
       }
     } catch (err) {
-      console.log(err.message);
       if (err.message === 'Request failed with status code 404') {
         setState(['toasterShown', 'emailNotFound'], [true, true]);
       }
@@ -98,17 +100,6 @@ export const Login: React.FC<{
       }
     }
   };
-
-  console.log(
-    'toasterShown',
-    toasterShown,
-    'emailUnconfirmed',
-    emailUnconfirmed,
-    'emailNotFound',
-    emailNotFound,
-    'signInSuccess',
-    signInSuccess
-  );
 
   const handleSignInTrigger = () => {
     setState('signInOpen', !signInOpen);
@@ -147,6 +138,7 @@ export const Login: React.FC<{
 
   return (
     <>
+      <Loader loading={loading} />
       <Toaster
         dismissFn={dismissToaster}
         dismissible={true}
@@ -194,7 +186,10 @@ export const Login: React.FC<{
         </div>
       </LoginWrapper>
       <Modal open={signInOpen} toggle={handleSignInTrigger}>
-        <Signin handleSignInSuccess={handleSignInSuccess} />
+        <Signin
+          triggerLoader={(trigger: boolean) => setState('loading', trigger)}
+          handleSignInSuccess={handleSignInSuccess}
+        />
       </Modal>
     </>
   );
