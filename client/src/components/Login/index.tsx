@@ -188,7 +188,6 @@ export const Login: React.FC<{
             changeFn={handleOnChange}
             blurFn={evt => handleBlur('pass', evt.target.value)}
             required={true}
-            validator={'password'}
           />
           <Button disabled={errored} text='Login' clickHandler={onLogin} />
           <div className='sign-up'>
