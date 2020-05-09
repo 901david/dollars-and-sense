@@ -16,14 +16,7 @@ import {
 } from '../common/constants';
 
 const { API_GATEWAY_ENDPOINT, API_GATEWAY_SECRET } = process.env;
-type ResultsSetHeader = {
-  fieldCount: number;
-  affectedRows: number;
-  insertId: number;
-  info: string;
-  serverStatus: number;
-  warningStatus: number;
-};
+
 export const handleUserPassword = (userData: User) => {
   return new Promise((resolve, reject) => {
     bcrypt.hash(userData.user_password, 10, function (err, hash) {
@@ -38,7 +31,6 @@ export const getUser = (id: number) => {
 };
 
 const setUUIDForUser = (uuid: string, id: number) => {
-  console.log('HEEREERERE', typeof uuid, typeof id);
   return makeQuery(
     `INSERT INTO UsersTokens (user_id, user_token) VALUES (${id}, "${uuid}")`
   );
@@ -48,7 +40,11 @@ export const getUserByEmail = (email: string) => {
   return makeQuery(`SELECT * FROM Users WHERE email="${email}"`);
 };
 
-const triggerConfirmationEmail = (email: string, id: number) => {
+const triggerConfirmationEmail = (
+  email: string,
+  id: number,
+  rollback: () => void
+) => {
   return new Promise(async (resolve, reject) => {
     try {
       const UUID = await uidgen.generate();
@@ -65,7 +61,7 @@ const triggerConfirmationEmail = (email: string, id: number) => {
       await setUUIDForUser(UUID, id);
       resolve({ success: true });
     } catch (err) {
-      //TODO: We need to roll back if one fails.......
+      rollback();
       reject(err);
     }
   });
@@ -90,7 +86,10 @@ export const handleUserRegister: RequestHandler = async (req, res) => {
         if (results) {
           await triggerConfirmationEmail(
             userCreationData.email,
-            results.insertId
+            results.insertId,
+            () => {
+              makeQuery(`DELETE FROM Users WHERE id=${results.insertId}`);
+            }
           );
           res.json({ message: 'Successfully Registered User' });
         }

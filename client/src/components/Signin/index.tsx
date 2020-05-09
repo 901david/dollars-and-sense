@@ -57,34 +57,17 @@ export const Signin: React.FC<ISigninProps> = ({
     }
   };
 
-  const fieldsMatch = (field1: string, filed2: string) => {
-    return field1 === filed2;
-  };
-
-  const passwordsMatch = () => {
-    return fieldsMatch(pass, passConfirm);
-  };
-
-  const emailsMatch = () => {
-    return fieldsMatch(email, emailConfirm);
-  };
-
   const signupDisabled = () => {
     const emailHasEmpty = email === '' || emailConfirm === '';
     const passHasEmpty = pass === '' || passConfirm === '';
     const userNameEmpty = userName === '';
 
-    const passesAreMatch = passwordsMatch();
-    const emailsAreMatch = emailsMatch();
-
-    return (
-      emailHasEmpty ||
-      passHasEmpty ||
-      userNameEmpty ||
-      !passesAreMatch ||
-      !emailsAreMatch
-    );
+    return emailHasEmpty || passHasEmpty || userNameEmpty || errored;
   };
+
+  React.useEffect(() => {}, [pass, passConfirm]);
+
+  React.useEffect(() => {}, [email, emailConfirm]);
 
   return (
     <>
@@ -112,6 +95,8 @@ export const Signin: React.FC<ISigninProps> = ({
           required={true}
           validator={'email'}
           defaultColor='black'
+          hasError={email !== emailConfirm}
+          parentErrors={['Emails must match.']}
         />
         <Input
           name='email_confirm'
@@ -124,6 +109,8 @@ export const Signin: React.FC<ISigninProps> = ({
           required={true}
           validator={'email'}
           defaultColor='black'
+          hasError={email !== emailConfirm}
+          parentErrors={['Emails must match.']}
         />
         <Input
           name='password'
@@ -136,6 +123,8 @@ export const Signin: React.FC<ISigninProps> = ({
           required={true}
           validator={'password'}
           defaultColor='black'
+          hasError={pass !== passConfirm}
+          parentErrors={['Passwords must match.']}
         />
         <Input
           name='password_confirm'
@@ -148,8 +137,11 @@ export const Signin: React.FC<ISigninProps> = ({
           required={true}
           validator={'password'}
           defaultColor='black'
+          hasError={pass !== passConfirm}
+          parentErrors={['Passwords must match.']}
         />
         <Button
+          ariaLabel='Sign up'
           disabled={signupDisabled()}
           text='Sign Up'
           clickHandler={onSignUp}

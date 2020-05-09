@@ -15,6 +15,8 @@ interface IInputProps {
   changeFn?: (errored: boolean) => void;
   validator?: CustomInputType;
   defaultColor?: string;
+  hasError?: boolean;
+  parentErrors?: string[];
 }
 
 export type CustomInputType =
@@ -37,6 +39,8 @@ export const Input: React.FC<IInputProps> = ({
   validator,
   changeFn,
   defaultColor,
+  hasError,
+  parentErrors,
 }) => {
   const [{ userInput, error, errors }, setState] = useMappedState({
     userInput: '',
@@ -52,8 +56,7 @@ export const Input: React.FC<IInputProps> = ({
 
   const handleOnChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     let isValid = false;
-    let errors: string[] = [];
-
+    let newErrors: string[] = [];
     if (validator !== undefined || validator !== '') {
       const validatorFN = getValidator(validator as CustomInputType);
       if (validatorFN) {
@@ -61,13 +64,13 @@ export const Input: React.FC<IInputProps> = ({
           evt.target.value as CustomInputType
         );
         isValid = valid;
-        errors = errs;
+        newErrors = errs;
       }
     }
 
     setState(
       ['userInput', 'error', 'errors'],
-      [evt.target.value, isValid, errors]
+      [evt.target.value, isValid, newErrors]
     );
 
     if (typeof changeFn === 'function') {
@@ -82,6 +85,15 @@ export const Input: React.FC<IInputProps> = ({
   };
 
   const inputTitle = errors.length > 0 ? errors.join(', ') : '';
+
+  React.useEffect(() => {
+    console.log('HAS ERROR?', hasError);
+    if (hasError !== undefined) {
+      const newErrors = errors || [];
+      newErrors.push(...(parentErrors || []));
+      setState(['error', 'errors'], [hasError, newErrors]);
+    }
+  }, [hasError]);
 
   const renderInput = () => (
     <InputWrapper defaultColor={defaultColor} input={userInput} error={error}>

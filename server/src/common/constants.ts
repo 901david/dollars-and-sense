@@ -27,7 +27,7 @@ export const CONFIRMATION_EMAIL_HTML = (id: number) => `
 
       <h4>To confirm your email address please click below</h4>
       <a href="https://136gm4r7y6.execute-api.us-west-2.amazonaws.com/dev?id=${id}">
-        <button type="submit" class="confirm-button">
+        <button aria-label="Confirm Email" type="submit" class="confirm-button">
           Confirm Email
         </button></a
       >

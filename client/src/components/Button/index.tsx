@@ -3,11 +3,16 @@ import styled, { css } from 'styled-components';
 
 interface IButtonProps {
   text: string;
-  clickHandler: (evt: React.MouseEvent<HTMLDivElement>) => void;
+  clickHandler: (
+    evt:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.KeyboardEvent<HTMLButtonElement>
+  ) => void;
   disabled: boolean;
+  ariaLabel: string;
 }
 
-const CustomButton = styled.div<{ disabled: boolean }>`
+const CustomButton = styled.button<{ disabled: boolean }>`
   width: 100%;
   height: 50px;
   display: flex;
@@ -42,8 +47,9 @@ export const Button: React.FC<IButtonProps> = ({
   text,
   clickHandler,
   disabled,
+  ariaLabel,
 }) => {
-  const handleClick = (evt: React.MouseEvent<HTMLDivElement>) => {
+  const handleClick = (evt: React.MouseEvent<HTMLButtonElement>) => {
     if (typeof clickHandler === 'function') {
       clickHandler(evt);
     }
@@ -51,10 +57,8 @@ export const Button: React.FC<IButtonProps> = ({
 
   return (
     <CustomButton
-      // tabindex='0'
-      role='button'
-      aria-pressed='false'
-      onClick={handleClick}
+      aria-label={ariaLabel}
+      onClick={disabled ? () => ({}) : handleClick}
       disabled={disabled}
       title={disabled ? 'Please fill out all fields' : undefined}
     >

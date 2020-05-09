@@ -189,7 +189,12 @@ export const Login: React.FC<{
             blurFn={evt => handleBlur('pass', evt.target.value)}
             required={true}
           />
-          <Button disabled={errored} text='Login' clickHandler={onLogin} />
+          <Button
+            ariaLabel='Log in'
+            disabled={errored}
+            text='Login'
+            clickHandler={onLogin}
+          />
           <div className='sign-up'>
             <p>
               Don't have an account yet?{' '}
