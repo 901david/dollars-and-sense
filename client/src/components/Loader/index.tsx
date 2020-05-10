@@ -27,7 +27,11 @@ const LoaderWrapper = styled.div`
   }
 `;
 
-export const Loader: React.FC<{ loading: boolean }> = ({ loading }) => {
+interface ILoaderProps {
+  loading: boolean;
+}
+
+export const Loader: React.FC<ILoaderProps> = ({ loading }) => {
   if (!loading) return null;
   return (
     <LoaderWrapper>
