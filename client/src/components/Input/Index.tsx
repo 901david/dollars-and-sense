@@ -8,10 +8,10 @@ interface IInputProps {
   name: string;
   labelId: string;
   inputId: string;
-  required?: boolean;
   type: CustomInputType;
   label: string;
   blurFn: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
   changeFn?: (errored: boolean) => void;
   validator?: CustomInputType;
   defaultColor?: string;
@@ -63,8 +63,8 @@ export const Input: React.FC<IInputProps> = ({
         const { isValid: valid, errors: errs } = validatorFN(
           evt.target.value as CustomInputType
         );
-        isValid = valid;
-        newErrors = errs;
+        isValid = valid || !!hasError;
+        newErrors = Array.from(new Set(errors.concat(errs)));
       }
     }
 
@@ -87,11 +87,10 @@ export const Input: React.FC<IInputProps> = ({
   const inputTitle = errors.length > 0 ? errors.join(', ') : '';
 
   React.useEffect(() => {
-    console.log('HAS ERROR?', hasError);
     if (hasError !== undefined) {
       const newErrors = errors || [];
       newErrors.push(...(parentErrors || []));
-      setState(['error', 'errors'], [hasError, newErrors]);
+      setState(['error', 'errors'], [hasError || error, newErrors]);
     }
   }, [hasError]);
 
@@ -105,9 +104,10 @@ export const Input: React.FC<IInputProps> = ({
         value={userInput}
         onChange={handleOnChange}
         onBlur={handleOnBlur}
-        required={required ?? false}
+        required={required === undefined ? false : required}
+        aria-required={required === undefined ? false : required}
       />
-      <label htmlFor={name} id={labelId} title={inputTitle}>
+      <label htmlFor={inputId} id={labelId} title={inputTitle}>
         {label} {required ? renderRequiredLabel() : null}
       </label>
     </InputWrapper>
