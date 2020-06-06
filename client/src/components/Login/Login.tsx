@@ -4,12 +4,12 @@ import { useMappedState } from 'react-use-mapped-state';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
-import { Input } from '../Input/Index';
-import { Button } from '../Button/index';
-import { Modal } from '../Modal';
-import { Signin } from '../Signin';
-import { Toaster } from '../Toaster';
-import { Loader } from '../Loader';
+import { Input } from '../Input/Input';
+import { Button } from '../Button/Button';
+import { Modal } from '../Modal/Modal';
+import { SignUp } from '../SignUp/SignUp';
+import { Toaster } from '../Toaster/Toaster';
+import { Loader } from '../Loader/Loader';
 
 const LoginWrapper = styled.main`
   background: black;
@@ -39,8 +39,8 @@ export const Login: React.FC<{
       userName,
       pass,
       errored,
-      signInOpen,
-      signInSuccess,
+      SignUpOpen,
+      SignUpSuccess,
       toasterShown,
       emailUnconfirmed,
       emailNotFound,
@@ -53,8 +53,8 @@ export const Login: React.FC<{
     userName: '',
     pass: '',
     errored: true,
-    signInOpen: false,
-    signInSuccess: false,
+    SignUpOpen: false,
+    SignUpSuccess: false,
     toasterShown: undefined,
     emailUnconfirmed: false,
     emailNotFound: false,
@@ -67,8 +67,8 @@ export const Login: React.FC<{
     setState(stateName, stateValue);
   };
 
-  const handleOnChange = (errored: boolean) => {
-    setState('errored', errored);
+  const handleOnChange = (validInput: boolean) => {
+    setState('errored', !validInput);
   };
 
   const onLogin = async () => {
@@ -104,13 +104,13 @@ export const Login: React.FC<{
     }
   };
 
-  const handleSignInTrigger = () => {
-    setState('signInOpen', !signInOpen);
+  const handleSignUpTrigger = () => {
+    setState('SignUpOpen', !SignUpOpen);
   };
 
-  const handleSignInSuccess = () => {
+  const handleSignUpSuccess = () => {
     setState(
-      ['signInOpen', 'toasterShown', 'signInSuccess'],
+      ['SignUpOpen', 'toasterShown', 'SignUpSuccess'],
       [false, true, true]
     );
   };
@@ -120,20 +120,20 @@ export const Login: React.FC<{
 
   const userMessageEmailNotFound = 'Email or Password not correct.';
 
-  const duplicateEmqailMessage =
+  const duplicateEmailMessage =
     'Email already exists in system. Please choose another or log in if you already have an account';
 
   const getMessageColor = () => {
-    if (signInSuccess) return 'success';
+    if (SignUpSuccess) return 'success';
     if (emailNotFound || passwordWrong || duplicateEmail) return 'alert';
     if (emailUnconfirmed) return 'warning';
     return 'success';
   };
 
   const getMessage = () => {
-    if (signInSuccess || emailUnconfirmed)
+    if (SignUpSuccess || emailUnconfirmed)
       return userMessageEmailNeedsConfirmation;
-    if (duplicateEmail) return duplicateEmqailMessage;
+    if (duplicateEmail) return duplicateEmailMessage;
     return userMessageEmailNotFound;
   };
 
@@ -141,7 +141,7 @@ export const Login: React.FC<{
     setState(
       [
         'toasterShown',
-        'signInSuccess',
+        'SignUpSuccess',
         'emailNotFound',
         'emailUnconfirmed',
         'passwordWrong',
@@ -198,16 +198,16 @@ export const Login: React.FC<{
           <div className='sign-up'>
             <p>
               Don't have an account yet?{' '}
-              <span onClick={handleSignInTrigger}>Sign up Here!</span>
+              <span onClick={handleSignUpTrigger}>Sign up Here!</span>
             </p>
           </div>
         </div>
       </LoginWrapper>
-      <Modal open={signInOpen} toggle={handleSignInTrigger}>
-        <Signin
+      <Modal open={SignUpOpen} toggle={handleSignUpTrigger}>
+        <SignUp
           duplicateEmailTriggered={duplicateEmailTriggered}
           triggerLoader={(trigger: boolean) => setState('loading', trigger)}
-          handleSignInSuccess={handleSignInSuccess}
+          handleSignUpSuccess={handleSignUpSuccess}
         />
       </Modal>
     </>

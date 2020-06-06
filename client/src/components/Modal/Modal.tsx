@@ -5,7 +5,7 @@ import {
   ModalCard,
   CloseButton,
   Background,
-} from './Modal-Components';
+} from './Modal.styles';
 
 const Portal = ({ children }: any) => {
   const modalRoot = document.getElementById('modal');

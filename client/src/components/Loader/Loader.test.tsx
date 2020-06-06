@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { Loader } from './index';
+import { Loader } from './Loader';
 
 describe('Loader tests', () => {
   describe('When loading is false', () => {

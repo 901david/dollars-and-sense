@@ -1,21 +1,29 @@
 import React from 'react';
 import { useMappedState } from 'react-use-mapped-state';
 import axios from 'axios';
+import styled from 'styled-components';
 
-import { Button } from '../Button';
-import { Input } from '../Input/Index';
+import { Button } from '../Button/Button';
+import { Input } from '../Input/Input';
+
+const SignUpWrapper = styled.div`
+  .errored {
+    border-bottom: solid 5px red;
+  }
+`;
 
 interface ISigninProps {
-  handleSignInSuccess: () => void;
+  handleSignUpSuccess: () => void;
   triggerLoader: (trigger: boolean) => void;
   duplicateEmailTriggered: () => void;
 }
 
-export const Signin: React.FC<ISigninProps> = ({
-  handleSignInSuccess,
+export const SignUp: React.FC<ISigninProps> = ({
+  handleSignUpSuccess,
   triggerLoader,
   duplicateEmailTriggered,
 }) => {
+  const signUpWrapper = React.useRef<HTMLDivElement | null>(null);
   const [
     { userName, email, emailConfirm, pass, passConfirm, errored },
     setState,
@@ -47,7 +55,7 @@ export const Signin: React.FC<ISigninProps> = ({
 
       if (results.data.message === 'Successfully Registered User') {
         triggerLoader(false);
-        handleSignInSuccess();
+        handleSignUpSuccess();
       }
     } catch (error) {
       if (error.message === 'Request failed with status code 409') {
@@ -65,13 +73,45 @@ export const Signin: React.FC<ISigninProps> = ({
     return emailHasEmpty || passHasEmpty || userNameEmpty || errored;
   };
 
-  React.useEffect(() => {}, [pass, passConfirm]);
+  React.useEffect(() => {
+    if (pass !== '' && passConfirm !== '' && pass !== passConfirm) {
+      signUpWrapper.current
+        ?.querySelector('input[name="password"]')
+        ?.classList.add('errored');
+      signUpWrapper.current
+        ?.querySelector('input[name="password_confirm"]')
+        ?.classList.add('errored');
+    } else {
+      signUpWrapper.current
+        ?.querySelector('input[name="password"]')
+        ?.classList.remove('errored');
+      signUpWrapper.current
+        ?.querySelector('input[name="password_confirm"]')
+        ?.classList.remove('errored');
+    }
+  }, [pass, passConfirm]);
 
-  React.useEffect(() => {}, [email, emailConfirm]);
+  React.useEffect(() => {
+    if (email !== '' && emailConfirm !== '' && email !== emailConfirm) {
+      signUpWrapper.current
+        ?.querySelector('input[name="email"]')
+        ?.classList.add('errored');
+      signUpWrapper.current
+        ?.querySelector('input[name="email_confirm"]')
+        ?.classList.add('errored');
+    } else {
+      signUpWrapper.current
+        ?.querySelector('input[name="email"]')
+        ?.classList.remove('errored');
+      signUpWrapper.current
+        ?.querySelector('input[name="email_confirm"]')
+        ?.classList.remove('errored');
+    }
+  }, [email, emailConfirm]);
 
   return (
     <>
-      <div>
+      <SignUpWrapper ref={signUpWrapper}>
         <h4>Sign Up</h4>
         <Input
           name='user_name'
@@ -95,8 +135,6 @@ export const Signin: React.FC<ISigninProps> = ({
           required={true}
           validator={'email'}
           defaultColor='black'
-          hasError={email !== emailConfirm}
-          parentErrors={['Emails must match.']}
         />
         <Input
           name='email_confirm'
@@ -109,8 +147,6 @@ export const Signin: React.FC<ISigninProps> = ({
           required={true}
           validator={'email'}
           defaultColor='black'
-          hasError={email !== emailConfirm}
-          parentErrors={['Emails must match.']}
         />
         <Input
           name='password'
@@ -123,8 +159,6 @@ export const Signin: React.FC<ISigninProps> = ({
           required={true}
           validator={'password'}
           defaultColor='black'
-          hasError={pass !== passConfirm}
-          parentErrors={['Passwords must match.']}
         />
         <Input
           name='password_confirm'
@@ -137,8 +171,6 @@ export const Signin: React.FC<ISigninProps> = ({
           required={true}
           validator={'password'}
           defaultColor='black'
-          hasError={pass !== passConfirm}
-          parentErrors={['Passwords must match.']}
         />
         <Button
           ariaLabel='Sign up'
@@ -146,7 +178,7 @@ export const Signin: React.FC<ISigninProps> = ({
           text='Sign Up'
           clickHandler={onSignUp}
         />
-      </div>
+      </SignUpWrapper>
     </>
   );
 };
