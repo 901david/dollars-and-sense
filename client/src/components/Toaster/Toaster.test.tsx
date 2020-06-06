@@ -47,7 +47,7 @@ describe('Toaster tests', () => {
       });
     });
 
-    describe('With only required props and is not triggered', () => {
+    describe.skip('With only required props and is not triggered', () => {
       let renderedComponent: any;
 
       beforeEach(() => {
@@ -66,7 +66,7 @@ describe('Toaster tests', () => {
       });
     });
 
-    describe('With only required props and is triggered and is dismissible', () => {
+    describe.skip('With only required props and is triggered and is dismissible', () => {
       let renderedComponent: any;
 
       beforeEach(() => {
@@ -114,7 +114,7 @@ describe('Toaster tests', () => {
       });
     });
 
-    describe('With only required props and is triggered and is timed', () => {
+    describe.skip('With only required props and is triggered and is timed', () => {
       let renderedComponent: any;
 
       beforeEach(() => {
