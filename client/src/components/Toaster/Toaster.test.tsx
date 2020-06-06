@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { Toaster } from './index';
+import { Toaster } from './Toaster';
 
 describe('Toaster tests', () => {
   describe('When the type is success', () => {
