@@ -1,79 +1,9 @@
 import React from 'react';
-import styled, { keyframes, css } from 'styled-components';
 import { useMappedState } from 'react-use-mapped-state';
+import { ToasterProps } from './Toaster.types';
+import { ToasterWrapper } from './Toaster.styles';
 
-type ToasterStyleType = 'success' | 'alert' | 'warning';
-
-interface IToasterProps {
-  message: string;
-  dismissible?: boolean;
-  time?: number;
-  type: ToasterStyleType;
-  triggered: boolean;
-  dismissFn?: () => void;
-}
-
-interface IToasterWrapperProps {
-  type: ToasterStyleType;
-  opened: boolean;
-}
-
-const colorMappings = new Map<ToasterStyleType, string>([
-  ['success', 'green'],
-  ['alert', 'red'],
-  ['warning', 'yellow'],
-]);
-
-const toasterIn = keyframes`
-    0%{transform: translateY(-125%)}
-    100%{transform: translateY(5%)}
-`;
-
-const toasterOut = keyframes`
-    0%{transform: translateY(5%)}
-    100%{transform: translateY(-125%)}
-`;
-
-const ToasterWrapper = styled.div<IToasterWrapperProps>`
-  transform: translateY(-125%);
-  background: transparent;
-  color: black;
-  font-family: inherit;
-  font-size: 18px;
-  display: flex;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 1010;
-  justify-content: center;
-  ${({ opened }) => {
-    console.log('OPENED', opened);
-    if (opened === undefined) return '';
-    return css`
-      animation: ${opened ? toasterIn : toasterOut} 2s forwards;
-    `;
-  }}
-
-  .toaster-inner-wrapper {
-    width: 65vh;
-    background: ${({ type }) => colorMappings.get(type)};
-    min-height: 50px;
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    position: relative;
-    border-radius: 5px;
-  }
-
-  .dismiss-icon {
-    cursor: pointer;
-    position: absolute;
-    top: 0;
-    right: 5px;
-  }
-`;
-
-export const Toaster: React.FC<IToasterProps> = ({
+export const Toaster: React.FC<ToasterProps> = ({
   message,
   type,
   dismissible,
@@ -98,20 +28,20 @@ export const Toaster: React.FC<IToasterProps> = ({
     }
   };
 
-  const triggerToaster = () => {
+  const triggerToaster = React.useCallback(() => {
     setState('opened', true);
     if (time !== undefined) {
       timer = setTimeout(() => {
         dismiss();
       }, time);
     }
-  };
+  }, [setState, dismiss]);
 
   React.useEffect(() => {
     if (triggered) {
       triggerToaster();
     }
-  }, [triggered]);
+  }, [triggered, triggerToaster]);
 
   return (
     <ToasterWrapper opened={opened} type={type}>

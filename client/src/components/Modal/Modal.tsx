@@ -1,23 +1,14 @@
-import React, { useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import React from 'react';
 import {
   ModalWrapper,
   ModalCard,
   CloseButton,
   Background,
 } from './Modal.styles';
+import { Portal } from '../Portal/Portal';
+import { ModalProps } from './Modal.types';
 
-const Portal = ({ children }: any) => {
-  const modalRoot = document.getElementById('modal');
-  if (modalRoot) return createPortal(children, modalRoot);
-  return null;
-};
-
-export const Modal: React.FC<{
-  children: any;
-  toggle: () => void;
-  open: boolean;
-}> = ({ children, toggle, open }) => {
+export const Modal: React.FC<ModalProps> = ({ children, toggle, open }) => {
   return (
     <Portal>
       {open && (

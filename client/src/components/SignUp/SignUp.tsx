@@ -1,24 +1,13 @@
 import React from 'react';
 import { useMappedState } from 'react-use-mapped-state';
 import axios from 'axios';
-import styled from 'styled-components';
 
 import { Button } from '../Button/Button';
 import { Input } from '../Input/Input';
+import { SignUpProps } from './SignUp.types';
+import { SignUpWrapper } from './SignUp.styles';
 
-const SignUpWrapper = styled.div`
-  .errored {
-    border-bottom: solid 5px red;
-  }
-`;
-
-interface ISigninProps {
-  handleSignUpSuccess: () => void;
-  triggerLoader: (trigger: boolean) => void;
-  duplicateEmailTriggered: () => void;
-}
-
-export const SignUp: React.FC<ISigninProps> = ({
+export const SignUp: React.FC<SignUpProps> = ({
   handleSignUpSuccess,
   triggerLoader,
   duplicateEmailTriggered,

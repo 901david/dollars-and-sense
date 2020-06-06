@@ -3,28 +3,7 @@ import { useMappedState } from 'react-use-mapped-state';
 
 import { InputWrapper } from './Input.styles';
 import { getValidator } from '../Common/Validations';
-
-export interface InputProps {
-  name: string;
-  labelId: string;
-  inputId: string;
-  type: CustomInputType;
-  label: string;
-  blurFn: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  required?: boolean;
-  changeFn?: (errored: boolean) => void;
-  validator?: CustomInputType;
-  defaultColor?: string;
-}
-
-export type CustomInputType =
-  | 'email'
-  | 'money'
-  | 'number'
-  | 'password'
-  | 'phone'
-  | 'text'
-  | 'zip';
+import { InputProps, CustomInputType } from './Input.types';
 
 export const Input: React.FC<InputProps> = ({
   name,

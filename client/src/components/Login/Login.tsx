@@ -10,29 +10,10 @@ import { Modal } from '../Modal/Modal';
 import { SignUp } from '../SignUp/SignUp';
 import { Toaster } from '../Toaster/Toaster';
 import { Loader } from '../Loader/Loader';
+import { LoginProps } from './Login.types';
+import { LoginWrapper } from './Login.styles';
 
-const LoginWrapper = styled.main`
-  background: black;
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  .sign-up {
-    color: white;
-    display: flex;
-
-    span {
-      color: lightblue;
-      cursor: pointer;
-    }
-  }
-`;
-
-export const Login: React.FC<{
-  setUserAuthed: (bool: boolean) => void;
-}> = ({ setUserAuthed }) => {
+export const Login: React.FC<LoginProps> = ({ setUserAuthed }) => {
   let history = useHistory();
   const [
     {

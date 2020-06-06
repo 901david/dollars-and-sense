@@ -1,4 +1,4 @@
-import { CustomInputType } from '../Input/Input';
+import { CustomInputType } from '../Input/Input.types';
 
 type ValidatorsMap = Map<
   CustomInputType,

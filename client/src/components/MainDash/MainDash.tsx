@@ -1,10 +1,9 @@
 import * as React from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
+import { MainDashProps } from './MainDash.types';
 
-export const MainDash: React.FC<{
-  setUserAuthed: (bool: boolean) => void;
-}> = ({ setUserAuthed }) => {
+export const MainDash: React.FC<MainDashProps> = ({ setUserAuthed }) => {
   const onLogout = async () => {
     try {
       await axios.post('/api/auth/logout');
