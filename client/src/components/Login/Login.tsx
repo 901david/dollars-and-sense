@@ -38,7 +38,6 @@ export const Login: React.FC<{
     {
       userName,
       pass,
-      errored,
       SignUpOpen,
       SignUpSuccess,
       toasterShown,
@@ -52,7 +51,6 @@ export const Login: React.FC<{
   ] = useMappedState({
     userName: '',
     pass: '',
-    errored: true,
     SignUpOpen: false,
     SignUpSuccess: false,
     toasterShown: undefined,
@@ -65,10 +63,6 @@ export const Login: React.FC<{
 
   const handleBlur = (stateName: string, stateValue: string) => {
     setState(stateName, stateValue);
-  };
-
-  const handleOnChange = (validInput: boolean) => {
-    setState('errored', !validInput);
   };
 
   const onLogin = async () => {
@@ -154,6 +148,8 @@ export const Login: React.FC<{
     setState(['toasterShown', 'duplicateEmail'], [true, true]);
   };
 
+  const errored = userName === '' || pass === '';
+
   return (
     <>
       <Loader loading={loading} />
@@ -175,9 +171,7 @@ export const Login: React.FC<{
             type='text'
             label='Email'
             blurFn={evt => handleBlur('userName', evt.target.value)}
-            changeFn={handleOnChange}
             required={true}
-            validator={'email'}
           />
           <Input
             name='password'
@@ -185,7 +179,6 @@ export const Login: React.FC<{
             inputId='password_input'
             type='password'
             label='Password'
-            changeFn={handleOnChange}
             blurFn={evt => handleBlur('pass', evt.target.value)}
             required={true}
           />

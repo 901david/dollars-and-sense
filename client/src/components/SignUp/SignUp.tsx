@@ -69,7 +69,7 @@ export const SignUp: React.FC<ISigninProps> = ({
     const emailHasEmpty = email === '' || emailConfirm === '';
     const passHasEmpty = pass === '' || passConfirm === '';
     const userNameEmpty = userName === '';
-
+    console.log('isErrored', errored);
     return emailHasEmpty || passHasEmpty || userNameEmpty || errored;
   };
 
@@ -108,7 +108,6 @@ export const SignUp: React.FC<ISigninProps> = ({
         ?.classList.remove('errored');
     }
   }, [email, emailConfirm]);
-
   return (
     <>
       <SignUpWrapper ref={signUpWrapper}>
@@ -133,7 +132,7 @@ export const SignUp: React.FC<ISigninProps> = ({
           blurFn={evt => handleBlur('email', evt.target.value)}
           changeFn={handleOnChange}
           required={true}
-          validator={'email'}
+          // validator={'email'}
           defaultColor='black'
         />
         <Input
@@ -145,7 +144,7 @@ export const SignUp: React.FC<ISigninProps> = ({
           blurFn={evt => handleBlur('emailConfirm', evt.target.value)}
           changeFn={handleOnChange}
           required={true}
-          validator={'email'}
+          // validator={'email'}
           defaultColor='black'
         />
         <Input

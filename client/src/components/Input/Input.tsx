@@ -59,6 +59,7 @@ export const Input: React.FC<InputProps> = ({
         const { isValid: valid, errors: errs } = validatorFN(
           evt.target.value as CustomInputType
         );
+        console.log('isValid', valid);
         isValid = valid;
         errs.forEach(err => newErrors.add(err));
       }
@@ -69,7 +70,7 @@ export const Input: React.FC<InputProps> = ({
     );
 
     if (typeof changeFn === 'function') {
-      changeFn(isValid);
+      changeFn(!isValid);
     }
   };
 

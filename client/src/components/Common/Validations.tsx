@@ -6,14 +6,23 @@ type ValidatorsMap = Map<
 >;
 
 const passwordWithValidChars = /(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
-const emailValidation = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 const validateEmail = (value: string) => {
-  const isInvalid = emailValidation.exec(value) === null;
+  let isValid = true;
+  const atIdentifierIdx = value.indexOf('@');
+  if (atIdentifierIdx === -1) isValid = false;
+  const hasTextBeforeAt = atIdentifierIdx - 1 > -1;
+  if (!hasTextBeforeAt) isValid = false;
+  const dotIdentifierIdx = value.indexOf('.');
+  if (dotIdentifierIdx === -1) isValid = false;
+  const atBeforeDotAndTextBetween = atIdentifierIdx + 1 < dotIdentifierIdx;
+  if (!atBeforeDotAndTextBetween) isValid = false;
+  const dotHasTextAfterIt = dotIdentifierIdx + 1 < value.length;
+  if (!dotHasTextAfterIt) isValid = false;
 
   const errors: string[] = [];
-  if (isInvalid) errors.push('Email must contain an @ and a . to be valid');
-  return { isValid: !isInvalid, errors };
+  if (!isValid) errors.push('Email must contain an @ and a . to be valid');
+  return { isValid, errors };
 };
 
 const validatePassword = (value: string) => {
