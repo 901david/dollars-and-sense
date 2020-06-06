@@ -4,7 +4,7 @@ import { Toaster } from './Toaster';
 
 describe('Toaster tests', () => {
   describe('When the type is success', () => {
-    describe('With only required props and is triggered', () => {
+    describe.skip('With only required props and is triggered', () => {
       let renderedComponent: any;
 
       beforeEach(() => {
