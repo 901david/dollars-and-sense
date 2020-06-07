@@ -11,7 +11,7 @@ export const Toaster: React.FC<ToasterProps> = ({
   triggered,
   dismissFn,
 }) => {
-  const [{ opened }, setState] = useMappedState({ opened: undefined });
+  const [{ opened }, setState] = useMappedState({ opened: triggered });
 
   let timer: any;
 
@@ -44,7 +44,7 @@ export const Toaster: React.FC<ToasterProps> = ({
   }, [triggered, triggerToaster]);
 
   return (
-    <ToasterWrapper opened={opened} type={type}>
+    <ToasterWrapper role='dialog' opened={opened} type={type}>
       <div className='toaster-inner-wrapper'>
         {dismissible ? (
           <span className='dismiss-icon' onClick={dismiss}>

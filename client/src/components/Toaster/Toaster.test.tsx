@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Toaster } from './Toaster';
 
 describe('Toaster tests', () => {
   describe('When the type is success', () => {
-    describe.skip('With only required props and is triggered', () => {
+    describe('With only required props and is triggered', () => {
       let renderedComponent: any;
 
       beforeEach(() => {
@@ -14,14 +14,12 @@ describe('Toaster tests', () => {
       });
 
       test('should render the toaster', () => {
-        const { getByRole } = renderedComponent;
-        const toaster = getByRole('dialog');
+        const toaster = screen.getByRole('dialog');
         expect(toaster).toBeInTheDocument();
       });
 
       test('should render the toaster with correct text', () => {
-        const { getByText } = renderedComponent;
-        const toasterText = getByText('hello world');
+        const toasterText = screen.getByText('hello world');
         expect(toasterText).toBeInTheDocument();
       });
 
@@ -31,42 +29,54 @@ describe('Toaster tests', () => {
         expect(toasterText).toBeFalsy();
       });
 
-      test('should have correct type', () => {
-        const { getByRole } = renderedComponent;
-        const innerContainer = getByRole('dialog');
-        expect(innerContainer).toHaveStyle('background: green');
+      test('should have correct type color', () => {
+        const innerContainer = screen.getByRole('dialog');
+        expect(innerContainer.children[0]).toHaveStyle('background: green');
       });
 
-      test('should render toaster visible to user', async () => {
-        const { container } = renderedComponent;
-        waitForDomChange({ container }).then(({ container }) => {
-          expect(container.children[0]).toHaveStyle(
-            'transform: translateY(5%)'
-          );
-        });
+      test.skip('should render toaster visible to user', async () => {
+        const innerContainer = screen.getByRole('dialog');
+        expect(innerContainer).toHaveStyle('transform: translateY(5%)');
       });
     });
 
-    describe.skip('With only required props and is not triggered', () => {
+    describe('With only required props and is not triggered', () => {
       let renderedComponent: any;
 
       beforeEach(() => {
         renderedComponent = render(
-          <Toaster message='hello world' type='success' triggered={true} />
+          <Toaster message='hello world' type='success' triggered={false} />
         );
       });
 
-      test('should render toaster visible to user', async () => {
+      test('should render the toaster', () => {
+        const toaster = screen.getByRole('dialog');
+        expect(toaster).toBeInTheDocument();
+      });
+
+      test('should render the toaster with correct text', () => {
+        const toasterText = screen.getByText('hello world');
+        expect(toasterText).toBeInTheDocument();
+      });
+
+      test('should not render dismissible x', () => {
         const { container } = renderedComponent;
-        await waitFor(() => {
-          expect(container.children[0]).toHaveStyle(
-            'transform: translateY(125%)'
-          );
-        });
+        const toasterText = container.querySelector('.dismiss-icon');
+        expect(toasterText).toBeFalsy();
+      });
+
+      test('should have correct type color', () => {
+        const innerContainer = screen.getByRole('dialog');
+        expect(innerContainer.children[0]).toHaveStyle('background: green');
+      });
+
+      test('should render toaster ooutside of  screen', async () => {
+        const wrapper = screen.getByRole('dialog');
+        expect(wrapper).toHaveStyle('transform: translateY(-125%)');
       });
     });
 
-    describe.skip('With only required props and is triggered and is dismissible', () => {
+    describe('With only required props and is triggered and is dismissible', () => {
       let renderedComponent: any;
 
       beforeEach(() => {
@@ -81,14 +91,12 @@ describe('Toaster tests', () => {
       });
 
       test('should render the toaster', () => {
-        const { getByRole } = renderedComponent;
-        const toaster = getByRole('dialog');
+        const toaster = screen.getByRole('dialog');
         expect(toaster).toBeInTheDocument();
       });
 
       test('should render the toaster with correct text', () => {
-        const { getByText } = renderedComponent;
-        const toasterText = getByText('hello world');
+        const toasterText = screen.getByText('hello world');
         expect(toasterText).toBeInTheDocument();
       });
 
@@ -98,30 +106,33 @@ describe('Toaster tests', () => {
         expect(toasterText).toBeInTheDocument();
       });
 
-      test('should have correct color for type', () => {
-        const { getByRole } = renderedComponent;
-        const innerContainer = getByRole('dialog');
-        expect(innerContainer).toHaveStyle('background: green');
+      test('should dismiss when dismiss icon clicked', async () => {
+        const { container } = renderedComponent;
+        const innerContainer = screen.getByRole('dialog');
+        const dismissIcon = container.querySelector('.dismiss-icon');
+        await fireEvent.click(dismissIcon);
+        expect(innerContainer).toHaveStyle('transform: translateY(-125%)');
       });
 
-      test('should render toaster visible to user', async () => {
-        const { container } = renderedComponent;
-        waitFor(() => {
-          expect(container.children[0]).toHaveStyle(
-            'transform: translateY(5%)'
-          );
-        });
+      test('should have correct color for type', () => {
+        const innerContainer = screen.getByRole('dialog');
+        expect(innerContainer.children[0]).toHaveStyle('background: green');
+      });
+
+      test.skip('should render toaster visible to user', async () => {
+        const innerContainer = screen.getByRole('dialog');
+        expect(innerContainer).toHaveStyle('transform: translateY(5%)');
       });
     });
 
-    describe.skip('With only required props and is triggered and is timed', () => {
+    describe('With only required props and is triggered and is timed', () => {
       let renderedComponent: any;
 
       beforeEach(() => {
         renderedComponent = render(
           <Toaster
             dismissible={true}
-            time={3000}
+            time={50}
             message='hello world'
             type='success'
             triggered={true}
@@ -130,14 +141,12 @@ describe('Toaster tests', () => {
       });
 
       test('should render the toaster', () => {
-        const { getByRole } = renderedComponent;
-        const toaster = getByRole('dialog');
+        const toaster = screen.getByRole('dialog');
         expect(toaster).toBeInTheDocument();
       });
 
       test('should render the toaster with correct text', () => {
-        const { getByText } = renderedComponent;
-        const toasterText = getByText('hello world');
+        const toasterText = screen.getByText('hello world');
         expect(toasterText).toBeInTheDocument();
       });
 
@@ -148,25 +157,18 @@ describe('Toaster tests', () => {
       });
 
       test('should have correct color for type', () => {
-        const { getByRole } = renderedComponent;
-        const innerContainer = getByRole('dialog');
+        const innerContainer = screen.getByRole('dialog');
         expect(innerContainer).toHaveStyle('background: green');
       });
 
-      test('should render toaster visible to user', async () => {
-        const { container } = renderedComponent;
-        waitFor(() => {
-          const wrapper = container.find('[type="success"]');
-          expect(wrapper).toHaveStyle('transform: translateY(5%)');
-        });
+      test('should render toaster visible to user', () => {
+        const innerContainer = screen.getByRole('dialog');
+        expect(innerContainer).toHaveStyle('transform: translateY(5%)');
       });
 
       test('should hide  after the  set amount of time', async () => {
-        const { container } = renderedComponent;
-        waitFor(() => {
-          const wrapper = container.find('[type="success"]');
-          expect(wrapper).toHaveStyle('transform: translateY(125%)');
-        });
+        const innerContainer = await screen.findByRole('dialog');
+        expect(innerContainer).toHaveStyle('transform: translateY(-125%)');
       });
     });
   });
