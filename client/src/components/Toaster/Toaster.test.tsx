@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Toaster } from './Toaster';
+import { ProvidedRequiredArgumentsOnDirectivesRule } from 'graphql/validation/rules/ProvidedRequiredArgumentsRule';
 
 describe('Toaster tests', () => {
   describe('When the type is success', () => {
@@ -34,8 +35,8 @@ describe('Toaster tests', () => {
         expect(innerContainer.children[0]).toHaveStyle('background: green');
       });
 
-      test.skip('should render toaster visible to user', async () => {
-        const innerContainer = screen.getByRole('dialog');
+      test('should render toaster visible to user', async () => {
+        const innerContainer = await screen.findByRole('dialog');
         expect(innerContainer).toHaveStyle('transform: translateY(5%)');
       });
     });
@@ -106,11 +107,11 @@ describe('Toaster tests', () => {
         expect(toasterText).toBeInTheDocument();
       });
 
-      test('should dismiss when dismiss icon clicked', async () => {
+      test.skip('should dismiss when dismiss icon clicked', async () => {
         const { container } = renderedComponent;
-        const innerContainer = screen.getByRole('dialog');
         const dismissIcon = container.querySelector('.dismiss-icon');
         await fireEvent.click(dismissIcon);
+        const innerContainer = await screen.findByRole('dialog');
         expect(innerContainer).toHaveStyle('transform: translateY(-125%)');
       });
 
@@ -119,7 +120,7 @@ describe('Toaster tests', () => {
         expect(innerContainer.children[0]).toHaveStyle('background: green');
       });
 
-      test.skip('should render toaster visible to user', async () => {
+      test('should render toaster visible to user', async () => {
         const innerContainer = screen.getByRole('dialog');
         expect(innerContainer).toHaveStyle('transform: translateY(5%)');
       });

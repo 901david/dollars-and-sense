@@ -11,6 +11,7 @@ export const Toaster: React.FC<ToasterProps> = ({
   triggered,
   dismissFn,
 }) => {
+  const dismissIcon = React.useRef<HTMLSpanElement | null>(null);
   const [{ opened }, setState] = useMappedState({ opened: triggered });
 
   let timer: any;
@@ -22,10 +23,12 @@ export const Toaster: React.FC<ToasterProps> = ({
     }
 
     if (typeof dismissFn === 'function') {
-      setTimeout(() => {
-        dismissFn();
-      }, 1000 * 2);
+      dismissFn();
     }
+  };
+
+  const handleKeyPress = (evt: React.KeyboardEvent) => {
+    if (evt.which === 13) dismiss();
   };
 
   const triggerToaster = React.useCallback(() => {
@@ -40,6 +43,9 @@ export const Toaster: React.FC<ToasterProps> = ({
   React.useEffect(() => {
     if (triggered) {
       triggerToaster();
+      if (dismissIcon !== null && dismissIcon.current) {
+        dismissIcon.current.focus();
+      }
     }
   }, [triggered, triggerToaster]);
 
@@ -47,7 +53,13 @@ export const Toaster: React.FC<ToasterProps> = ({
     <ToasterWrapper role='dialog' opened={opened} type={type}>
       <div className='toaster-inner-wrapper'>
         {dismissible ? (
-          <span className='dismiss-icon' onClick={dismiss}>
+          <span
+            ref={dismissIcon}
+            className='dismiss-icon'
+            tabIndex={0}
+            onClick={dismiss}
+            onKeyPress={handleKeyPress}
+          >
             &times;
           </span>
         ) : null}

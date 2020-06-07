@@ -34,7 +34,7 @@ export const Login: React.FC<LoginProps> = ({ setUserAuthed }) => {
     pass: '',
     SignUpOpen: false,
     SignUpSuccess: false,
-    toasterShown: undefined,
+    toasterShown: false,
     emailUnconfirmed: false,
     emailNotFound: false,
     passwordWrong: false,
@@ -112,7 +112,7 @@ export const Login: React.FC<LoginProps> = ({ setUserAuthed }) => {
     return userMessageEmailNotFound;
   };
 
-  const dismissToaster = () =>
+  const dismissToaster = () => {
     setState(
       [
         'toasterShown',
@@ -124,6 +124,7 @@ export const Login: React.FC<LoginProps> = ({ setUserAuthed }) => {
       ],
       [false, false, false, false, false, false]
     );
+  };
 
   const duplicateEmailTriggered = () => {
     setState(['toasterShown', 'duplicateEmail'], [true, true]);

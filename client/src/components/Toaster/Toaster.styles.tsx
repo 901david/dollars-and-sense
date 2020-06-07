@@ -7,18 +7,7 @@ const colorMappings = new Map<ToasterStyleType, string>([
   ['warning', 'yellow'],
 ]);
 
-const toasterIn = keyframes`
-      0%{transform: translateY(-125%)}
-      100%{transform: translateY(5%)}
-  `;
-
-const toasterOut = keyframes`
-      0%{transform: translateY(5%)}
-      100%{transform: translateY(-125%)}
-  `;
-
 export const ToasterWrapper = styled.div<ToasterWrapperProps>`
-  transform: translateY(-125%);
   background: transparent;
   color: black;
   font-family: inherit;
@@ -29,12 +18,9 @@ export const ToasterWrapper = styled.div<ToasterWrapperProps>`
   width: 100%;
   z-index: 1010;
   justify-content: center;
-  ${({ opened }) => {
-    if (opened === undefined) return '';
-    return css`
-      animation: ${opened ? toasterIn : toasterOut} 2s forwards;
-    `;
-  }}
+  transition: all 2s;
+  transform: ${({ opened }) =>
+    opened ? 'translateY(5%)' : 'translateY(-125%)'};
 
   .toaster-inner-wrapper {
     width: 65vh;

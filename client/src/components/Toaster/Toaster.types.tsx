@@ -5,7 +5,7 @@ export interface ToasterProps {
   dismissible?: boolean;
   time?: number;
   type: ToasterStyleType;
-  triggered: boolean;
+  triggered: boolean | undefined;
   dismissFn?: () => void;
 }
 
