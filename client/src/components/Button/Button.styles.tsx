@@ -3,18 +3,18 @@ import styled, { css } from 'styled-components';
 export const CustomButton = styled.button<{ disabled: boolean }>`
   width: 100%;
   height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 5px;
-  background: ${({ disabled }) => (disabled ? 'darkgray' : 'white')};
-  color: black;
-  font-size: 24px;
+  ${({ theme }) => theme.flexProperties('center', 'center')};
+  border-radius: ${({ theme }) => theme.standardBorderRadius};
+  background: ${({ disabled, theme }) =>
+    disabled ? theme.disabled : theme.colorWhite};
+  color: ${({ theme }) => theme.colorBlack};
+  font-size: ${({ theme }) => theme.fontSizeLarge};
   font-family: inherit;
   letter-spacing: 10px;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   transform: scale(1);
-  transition: all 0.5s;
+  ${({ theme }) => theme.standardTransition};
+
   ${({ disabled }) => {
     return (
       !disabled &&

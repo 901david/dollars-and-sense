@@ -5,21 +5,18 @@ export const ModalWrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  ${({ theme }) => theme.fullVW};
+  ${({ theme }) => theme.flexProperties('center', 'center')};
 `;
 export const ModalCard = styled.div`
   position: relative;
   min-width: 320px;
   z-index: 10;
   margin-bottom: 100px;
-  background: white;
-  border-radius: 5px;
+  background: ${({ theme }) => theme.colorWhite};
+  border-radius: ${({ theme }) => theme.standardBorderRadius};
   padding: 15px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: ${({ theme }) => theme.boxShadow};
 `;
 export const CloseButton = styled.div`
   position: absolute;
@@ -35,10 +32,9 @@ export const CloseButton = styled.div`
 `;
 export const Background = styled.div`
   position: absolute;
-  width: 100%;
-  height: 100%;
+  ${({ theme }) => theme.fullVW};
   top: 0;
   left: 0;
-  background: black;
+  background: ${({ theme }) => theme.colorBlack};
   opacity: 0.5;
 `;

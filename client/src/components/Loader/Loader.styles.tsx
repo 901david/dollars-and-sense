@@ -1,25 +1,23 @@
-import styled from 'styled-components';
+import styled, { ThemeContext } from 'styled-components';
 
 export const LoaderWrapper = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgb(250, 250, 250, 0.8);
+  ${({ theme }) => theme.fullVW};
+
+  background: ${({ theme }) => theme.colorTranslucent80White};
   z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  ${({ theme }) => theme.flexProperties('center', 'center')};
 
   svg {
-    font-size: 12rem;
+    font-size: ${({ theme }) => theme.foontSizeXtraLarge};
     position: absolute;
     z-index: 1002;
-    color: #85bb65;
+    color: ${({ theme }) => theme.colorMoneyGreen};
   }
 
   svg:last-child {
-    font-size: 6rem;
+    font-size: ${({ theme }) => theme.fontSizeLarge};
   }
 `;

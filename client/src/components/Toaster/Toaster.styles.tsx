@@ -9,15 +9,15 @@ const colorMappings = new Map<ToasterStyleType, string>([
 
 export const ToasterWrapper = styled.div<ToasterWrapperProps>`
   background: transparent;
-  color: black;
+  color: ${({ theme }) => theme.colorBlack};
   font-family: inherit;
-  font-size: 18px;
+  font-size: ${({ theme }) => theme.fontSizeLarge};
   display: flex;
+  justify-content: center;
   position: absolute;
   top: 0;
   width: 100%;
   z-index: 1010;
-  justify-content: center;
   transition: all 2s;
   transform: ${({ opened }) =>
     opened ? 'translateY(5%)' : 'translateY(-125%)'};

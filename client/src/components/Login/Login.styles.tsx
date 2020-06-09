@@ -1,19 +1,16 @@
 import styled from 'styled-components';
 
 export const LoginWrapper = styled.main`
-  background: black;
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background: ${({ theme }) => theme.colorBlack};
+  ${({ theme }) => theme.fullVW};
+  ${({ theme }) => theme.flexProperties('center', 'center')};
 
   .sign-up {
-    color: white;
-    display: flex;
+    color: ${({ theme }) => theme.colorWhite};
+    ${({ theme }) => theme.flexProperties()};
 
     span {
-      color: lightblue;
+      color: ${({ theme }) => theme.colorLightBlue};
       cursor: pointer;
     }
   }

@@ -1,16 +1,16 @@
 import styled from 'styled-components';
 
-interface IInputWrapper {
+interface InputWrapper {
   input: string;
   error: boolean;
   defaultColor?: string;
 }
 
-export const InputWrapper = styled.div<IInputWrapper>`
+export const InputWrapper = styled.div<InputWrapper>`
   position: relative;
   margin: 3rem 0;
-  color: ${({ defaultColor }) =>
-    defaultColor !== undefined ? defaultColor : 'white'};
+  color: ${({ defaultColor, theme }) =>
+    defaultColor !== undefined ? defaultColor : theme.colorWhite};
   label {
     position: absolute;
     left: 0;
@@ -18,19 +18,24 @@ export const InputWrapper = styled.div<IInputWrapper>`
       return input !== '' ? '1.8rem' : '0.5rem';
     }};
     font-style: italic;
-    font-size: 1.5rem;
-    transition: all 0.5s;
+    font-size: ${({ theme }) => theme.fontSizeMedium};
+    ${({ theme }) => theme.standardTransition};
   }
   input {
-    background: rgb(0, 0, 0, 0);
+    background: ${({ theme }) => theme.colorBlack};
     border: none;
     border-bottom: solid 5px
-      ${({ error, defaultColor }) =>
-        error ? 'red' : defaultColor !== undefined ? defaultColor : 'white'};
+      ${({ error, defaultColor, theme }) =>
+        error
+          ? 'red'
+          : defaultColor !== undefined
+          ? defaultColor
+          : theme.colorWhite};
     width: 45vw;
-    color: ${({ defaultColor }) =>
-      defaultColor !== undefined ? defaultColor : 'white'};
-    font-size: 1.5rem;
+    color: ${({ defaultColor, theme }) =>
+      defaultColor !== undefined ? defaultColor : theme.colorWhite};
+    font-size: ${({ theme }) => theme.fontSizeMedium};
+
     &:focus {
       outline: none;
       & + label {
@@ -40,6 +45,6 @@ export const InputWrapper = styled.div<IInputWrapper>`
   }
 
   .input-required {
-    color: red;
+    color: ${({ theme }) => theme.colorDanger};
   }
 `;
