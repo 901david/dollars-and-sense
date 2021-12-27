@@ -3,8 +3,31 @@ import axios from 'axios';
 
 import { UserType } from '../types/user';
 import { User } from '../../models/user.type';
+import { UserAuth } from '../types/user-auth';
 
 export const userMutations = {
+  loginUser: {
+    type: UserAuth,
+    args: {
+      user_password: { type: new GraphQLNonNull(GraphQLString) },
+      email: { type: new GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(
+      parentValue: User,
+      args: { user_password: string; user_email: string }
+    ) {
+      try {
+        const results = await axios.post(
+          'http://localhost:5005/api/auth/login',
+          args
+        );
+        console.log('Your results', results);
+        return results.data;
+      } catch (err) {
+        return err;
+      }
+    },
+  },
   addUser: {
     type: UserType,
     args: {
@@ -18,7 +41,7 @@ export const userMutations = {
     ) {
       try {
         const results = await axios.post(
-          'http://localhost:5005/api/authau/register',
+          'http://localhost:5005/api/auth/register',
           args
         );
         return results.data;

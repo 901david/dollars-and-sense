@@ -1,37 +1,42 @@
 import React from 'react';
-import { Route, BrowserRouter as Router } from 'react-router-dom';
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
+import { Route, BrowserRouter as Router, Redirect } from 'react-router-dom';
+import { useMappedState } from 'react-use-mapped-state';
 
-import { MainDash } from './components/MainDash';
+import { MainDash } from './components/MainDash/MainDash';
 import { PrivateRoute } from './components/Common/PrivateRoute';
-import { Login } from './components/Login';
-
-export const GET_USER = gql`
-  query User($id: Int!) {
-    user(id: $id) {
-      user_name
-    }
-  }
-`;
+import { Login } from './components/Login/Login';
 
 const App = () => {
-  const { loading, error, data } = useQuery(GET_USER, {
-    variables: { id: 22 },
+  const [{ isAuthenticated }, setState] = useMappedState({
+    isAuthenticated: false,
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
-  console.log(data);
+  const setUserAuthed = (authenticated: boolean) => {
+    setState('isAuthenticated', authenticated);
+    //TODO: how do we expire this weirdness?
+    // setTimeout(() => {
+    //   setState('isAuthenticated', false);
+    // }, 1000 * 60);
+  };
+
   return (
     <div>
-      <p>{data.user.user_name}</p>
-      <h1>App</h1>
       <Router>
         <PrivateRoute
-          route={() => <Route exact path='/' component={MainDash} />}
+          isAuthenticated={isAuthenticated}
+          route={() => (
+            <Route
+              exact
+              path='/'
+              component={() => <MainDash setUserAuthed={setUserAuthed} />}
+            />
+          )}
         />
-        <Route path='/login' component={Login} />
+        <Route
+          path='/login'
+          component={() => <Login setUserAuthed={setUserAuthed} />}
+        />
+        <Route path='/dashboard' component={() => <Redirect to='/' />} />
       </Router>
     </div>
   );

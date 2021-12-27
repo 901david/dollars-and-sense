@@ -2,7 +2,7 @@ const NODE_ENV = (process.env.NODE_ENV as NodeEnv) || 'development';
 if (NODE_ENV === 'development') {
   require('dotenv').config();
 }
-
+import session from 'express-session';
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
@@ -26,6 +26,14 @@ if (NODE_ENV === 'development') {
 app.use(express.static(path.join(__dirname, 'dist/static')));
 app.use(express.json());
 app.use(bodyParser({ extended: true }));
+app.use(
+  session({
+    secret: process.env.EXPRESS_SECRET || '',
+    resave: false,
+    saveUninitialized: true,
+    // cookie: { secure: true }
+  })
+);
 
 setUpAuthentication(app);
 setupGraphQl(app);

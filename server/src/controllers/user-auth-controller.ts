@@ -1,13 +1,21 @@
 import { RequestHandler } from 'express';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { RowDataPacket } from 'mysql2';
+import passport from 'passport';
+import axios from 'axios';
+const UIDGenerator = require('uid-generator');
+const uidgen = new UIDGenerator();
 
 import { makeQuery } from '../common/promisified-db-query';
 import { User } from '../models/user.type';
-import { jwtOptions } from '../config/authentication-setup';
 import { UserDbModel } from '../db/models/user-model';
 import { UserCreationTransferObject } from '../models/user-creation-type';
+import {
+  CONFIRMATION_EMAIL_FROM,
+  CONFIRMATION_EMAIL_SUBJECT,
+  CONFIRMATION_EMAIL_HTML,
+} from '../common/constants';
+
+const { API_GATEWAY_ENDPOINT, API_GATEWAY_SECRET } = process.env;
 
 export const handleUserPassword = (userData: User) => {
   return new Promise((resolve, reject) => {
@@ -22,49 +30,119 @@ export const getUser = (id: number) => {
   return makeQuery(`SELECT * FROM Users WHERE id=${id}`);
 };
 
-export const getUserByUserName = (username: string) => {
-  return makeQuery(`SELECT * FROM Users WHERE user_name="${username}"`);
-};
-
-export const handleUserRegister: RequestHandler = async (req, res) => {
-  const { body: userCreationData } = req;
-  const hashedPass = await handleUserPassword(userCreationData);
-  userCreationData.user_password = hashedPass;
-  UserDbModel.create(
-    userCreationData as UserCreationTransferObject,
-    (results: RowDataPacket[]) => {
-      console.log(req.user);
-      res.json(results);
-    }
+const setUUIDForUser = (uuid: string, id: number) => {
+  return makeQuery(
+    `INSERT INTO UsersTokens (user_id, user_token) VALUES (${id}, "${uuid}")`
   );
 };
 
-export const handleUserLogin: RequestHandler = async (req, res, next) => {
-  try {
-    const { user_name, user_password } = req.body;
-    if (user_name && user_password) {
-      const userData = await getUserByUserName(user_name);
-      const user = userData[0] as User;
-      if (!user) {
-        res.status(401).json({ msg: 'No such user found', user });
-      }
+export const getUserByEmail = (email: string) => {
+  return makeQuery(`SELECT * FROM Users WHERE email="${email}"`);
+};
 
-      const isValidPass = await passwordIsCorrect(
-        user_password,
-        user.user_password
-      );
+const triggerConfirmationEmail = (
+  email: string,
+  id: number,
+  rollback: () => void
+) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const UUID = await uidgen.generate();
+      const emailData = {
+        to: email,
+        from: CONFIRMATION_EMAIL_FROM,
+        subject: CONFIRMATION_EMAIL_SUBJECT,
+        html: CONFIRMATION_EMAIL_HTML(UUID),
+      };
+      await axios.post(API_GATEWAY_ENDPOINT!, emailData, {
+        headers: { 'x-api-key': API_GATEWAY_SECRET },
+      });
 
-      if (isValidPass) {
-        const payload = { id: user.id };
-        const token = jwt.sign(payload, jwtOptions.secretOrKey);
-        res.json({ msg: 'ok', token: token });
-      } else {
-        res.status(401).json({ msg: 'Password is incorrect' });
-      }
+      await setUUIDForUser(UUID, id);
+      resolve({ success: true });
+    } catch (err) {
+      rollback();
+      reject(err);
     }
-  } catch (err) {
-    throw err;
+  });
+};
+
+export const handleUserRegister: RequestHandler = async (req, res) => {
+  try {
+    const { body: userCreationData } = req;
+    const emailExists = await getUserByEmail(userCreationData.email).then(
+      users => users.length > 0
+    );
+
+    if (emailExists) {
+      res.status(409).json({ message: 'Email already exists' });
+    }
+
+    const hashedPass = await handleUserPassword(userCreationData);
+    userCreationData.user_password = hashedPass;
+    UserDbModel.create(
+      userCreationData as UserCreationTransferObject,
+      async (results: any) => {
+        if (results) {
+          await triggerConfirmationEmail(
+            userCreationData.email,
+            results.insertId,
+            () => {
+              makeQuery(`DELETE FROM Users WHERE id=${results.insertId}`);
+            }
+          );
+          res.json({ message: 'Successfully Registered User' });
+        }
+      }
+    );
+  } catch (error) {
+    res.status(400).json({ error });
   }
+};
+
+export const handleEmailConfirmation: RequestHandler = async (req, res) => {
+  const { email } = req.body;
+  const { message, status } = await isUserEmailConfirmed(email);
+  res.status(status).json({ message });
+};
+
+export const isUserEmailConfirmed = async (email: string) => {
+  const results = await UserDbModel.getOneByEmail(email);
+  if (results.length === 0)
+    return {
+      confirmed: false,
+      message: 'Email does not exist in system',
+      status: 404,
+    };
+  else {
+    const user = results.pop();
+    const confirmed = user && user.email_confirmed === 1;
+    if (confirmed)
+      return {
+        confirmed: true,
+        message: 'Email is confirmed in system',
+        status: 200,
+      };
+    else
+      return {
+        confirmed: false,
+        message: 'Email is not confirmed in system',
+        status: 425,
+      };
+  }
+};
+
+export const handleLogin: RequestHandler = async (req, res, next) => {
+  passport.authenticate('local', (err, user) => {
+    console.log('USER', user, 'err', err);
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).json({ message: 'User not authorized' });
+    }
+    return res.status(200).json({ message: 'Successfully Authenticated' });
+  })(req, res, next);
 };
 
 export const handleUserLogout: RequestHandler = (req, res) => {
@@ -73,16 +151,7 @@ export const handleUserLogout: RequestHandler = (req, res) => {
 };
 
 export const handleIsUserAuthenticated: RequestHandler = (req, res) => {
-  res.json({ isAuthenticated: req.isAuthenticated() });
-};
-
-const passwordIsCorrect = (userEnteredPass: string, dbPass: string) => {
-  return new Promise((resolve, reject) => {
-    bcrypt.compare(userEnteredPass, dbPass, (err, result) => {
-      if (err) reject(err);
-      return resolve(result);
-    });
-  });
+  res.json({ isAuthenticated: true });
 };
 
 export const protectRoute = (): RequestHandler => (req, res, next) => {

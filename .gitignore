@@ -5,4 +5,8 @@
 
 /client/node_modules
 /client/build
+/lambda/confirmation_mailer/node_modules
+/lambda/email_confirmation_updater/node_modules
+/lambda/fraud_handler/node_modules
+/lambda/token_cleaner/node_modules
 

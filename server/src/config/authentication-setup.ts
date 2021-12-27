@@ -1,26 +1,58 @@
 import passport from 'passport';
-import passportJWT from 'passport-jwt';
 import { Express } from 'express';
+import bcrypt from 'bcrypt';
 
-import { JWTOptions } from '../models/jwt-options.type';
-import { getUser } from '../controllers/user-auth-controller';
+import { Strategy as LocalStrategy } from 'passport-local';
+import { getUser, getUserByEmail } from '../controllers/user-auth-controller';
 
-const ExtractJwt = passportJWT.ExtractJwt;
-const JwtStrategy = passportJWT.Strategy;
-
-export const jwtOptions: JWTOptions = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.JWT_SECRET!,
+const passwordIsCorrect = (userEnteredPass: string, dbPass: string) => {
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(userEnteredPass, dbPass, (err, result) => {
+      if (err) reject(err);
+      return resolve(result);
+    });
+  });
 };
 
 export const setUpAuthentication = (app: Express) => {
-  const strategy = new JwtStrategy(jwtOptions, async (jwt_payload, next) => {
-    const user = await getUser(jwt_payload.id);
-    if (user) next(null, user);
-    else next(null, false);
+  passport.use(
+    new LocalStrategy(
+      {
+        usernameField: 'email',
+        passwordField: 'user_password',
+      },
+      async (email, password, done) => {
+        try {
+          const user = await getUserByEmail(email).then(res => res[0]);
+          if (!user) {
+            return done(null, false, { message: 'Incorrect email.' });
+          }
+
+          if (!(await passwordIsCorrect(password, user.user_password))) {
+            return done(null, false, { message: 'Incorrect password.' });
+          }
+
+          return done(null, user);
+        } catch (err) {
+          done(err);
+        }
+      }
+    )
+  );
+
+  passport.serializeUser((user: { id: string }, done) => {
+    done(null, user.id);
   });
 
-  passport.use(strategy);
+  passport.deserializeUser(async (id: number, done) => {
+    try {
+      const user = await getUser(id);
+      done(undefined, user);
+    } catch (err) {
+      done(err, undefined);
+    }
+  });
 
   app.use(passport.initialize());
+  app.use(passport.session());
 };
